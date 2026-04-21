@@ -7,177 +7,209 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0b0d14; color: #e5e7eb; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #0b0d14; color: #e5e7eb; overflow: hidden; }
         .glass-panel { background: rgba(16, 19, 28, 0.95); border-right: 1px solid #1f2536; }
-        .free-badge { background: linear-gradient(90deg, #10b981, #3b82f6); color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; }
         .active-tool { background: rgba(37, 99, 235, 0.1); border-color: #3b82f6; border-left: 4px solid #3b82f6; color: #fff;}
-        .dash-card { transition: all 0.3s ease; cursor: pointer; }
-        .dash-card:hover { transform: translateY(-5px); border-color: rgba(59, 130, 246, 0.5); }
-        .voice-orb.listening { animation: pulse 1.2s infinite ease-in-out; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.3); opacity: 1; } }
+        .dash-card { transition: all 0.3s ease; cursor: pointer; background: #121520; border: 1px solid #1f2536; }
+        .dash-card:hover { transform: translateY(-5px); border-color: rgba(59, 130, 246, 0.5); background: #161a29; }
+        .free-tag { font-size: 9px; background: linear-gradient(90deg, #10b981, #3b82f6); color: white; padding: 1px 5px; border-radius: 3px; font-weight: 800; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #1f2536; border-radius: 10px; }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="flex h-screen">
 
     <aside class="hidden md:flex w-64 flex-col glass-panel shadow-2xl z-20">
-        <div class="p-5 flex items-center justify-between border-b border-gray-800">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center"><i class="fas fa-bolt text-white"></i></div>
-                <h1 class="text-xl font-bold">Zeyan<span class="text-blue-500">AI</span></h1>
+        <div class="p-5 border-b border-gray-800 flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-600/20">
+                <i class="fas fa-bolt text-white text-sm"></i>
             </div>
+            <h1 class="text-xl font-extrabold tracking-tight">Zeyan<span class="text-blue-500">AI</span></h1>
         </div>
 
         <div class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-            <div id="userSection" class="mb-6 p-3 bg-gray-900/50 rounded-xl border border-gray-800 hidden">
-                <div class="flex items-center gap-3 mb-3">
-                    <img id="userPhoto" src="" class="w-10 h-10 rounded-full border border-blue-500">
-                    <div class="overflow-hidden">
-                        <p id="userName" class="text-xs font-bold truncate">User Name</p>
-                        <p class="text-[10px] text-green-500">● Online</p>
+            <div id="authSection" class="mb-6">
+                <button id="loginBtn" onclick="smartLogin()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-500 transition shadow-lg shadow-blue-600/20">
+                    <i class="fas fa-user-circle mr-2"></i> Sign In
+                </button>
+                <div id="userProfile" class="hidden p-3 bg-gray-900/50 rounded-xl border border-gray-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold" id="userInitial">U</div>
+                        <div class="overflow-hidden">
+                            <p id="displayUserName" class="text-xs font-bold truncate">Guest User</p>
+                            <p onclick="smartLogout()" class="text-[10px] text-red-500 cursor-pointer hover:underline">Logout</p>
+                        </div>
                     </div>
                 </div>
-                <button onclick="logout()" class="w-full py-1.5 text-[11px] bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg hover:bg-red-500 hover:text-white transition">Logout</button>
             </div>
 
-            <div id="loginSection" class="mb-6">
-                <button onclick="login()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 hover:bg-blue-500 transition">
-                    <i class="fas fa-user-circle mr-2"></i> Login with Google
-                </button>
-            </div>
-
-            <div class="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-2 mb-2">Studio Tools</div>
-            <button id="chatModeBtn" onclick="switchMode('chat')" class="w-full flex items-center p-3 rounded-lg active-tool text-sm"><i class="fas fa-comment-dots w-5 text-blue-400"></i> AI Chat</button>
-            <button id="imageModeBtn" onclick="switchMode('image')" class="w-full flex items-center p-3 rounded-lg text-sm text-gray-400 hover:text-gray-200"><i class="fas fa-image w-5 text-orange-400"></i> Image Gen</button>
-            <button id="voiceModeBtn" onclick="switchMode('voice')" class="w-full flex items-center p-3 rounded-lg text-sm text-gray-400 hover:text-gray-200"><i class="fas fa-microphone-lines w-5 text-pink-400"></i> Voice Mode</button>
+            <div class="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-2 mb-2">Tools</div>
+            <button onclick="switchMode('chat')" id="btn-chat" class="w-full flex items-center p-3 rounded-lg active-tool text-sm transition"><i class="fas fa-comment-dots w-5 text-blue-400"></i> AI Chat</button>
+            <button onclick="switchMode('image')" id="btn-image" class="w-full flex items-center p-3 rounded-lg text-sm text-gray-400 hover:text-gray-200 transition"><i class="fas fa-image w-5 text-orange-400"></i> Image Gen</button>
+            <button onclick="switchMode('voice')" id="btn-voice" class="w-full flex items-center p-3 rounded-lg text-sm text-gray-400 hover:text-gray-200 transition"><i class="fas fa-microphone-lines w-5 text-pink-400"></i> Voice Mode</button>
+            
+            <div class="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-2 mt-6 mb-2">Studio</div>
+            <button onclick="alert('Video Studio launching soon!')" class="w-full flex items-center p-3 rounded-lg text-sm text-gray-500 cursor-not-allowed"><i class="fas fa-video w-5 text-red-500/50"></i> Video Studio</button>
+            <button onclick="alert('Music Gen launching soon!')" class="w-full flex items-center p-3 rounded-lg text-sm text-gray-500 cursor-not-allowed"><i class="fas fa-music w-5 text-green-500/50"></i> Music Gen</button>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col relative w-full h-full">
-        <header class="h-14 flex items-center justify-between px-4 border-b border-gray-800/50 bg-[#0b0d14]/90 backdrop-blur-md z-10">
-            <select id="modelSelect" class="bg-[#121520] border border-gray-700 text-xs font-medium rounded-lg px-2 py-1.5 outline-none text-gray-300">
-                <optgroup label="Free Models (Active)">
+    <main class="flex-1 flex flex-col relative bg-[#0b0d14]">
+        <header class="h-14 flex items-center justify-between px-6 border-b border-gray-800/50 bg-[#0b0d14]/80 backdrop-blur-md z-10">
+            <select id="modelSelect" class="bg-[#121520] border border-gray-700 text-xs font-medium rounded-lg px-3 py-1.5 outline-none text-gray-300 focus:border-blue-500 transition">
+                <optgroup label="Free Models">
                     <option value="google/gemma-2-9b-it:free">Gemma 2 9B - Free</option>
                     <option value="mistralai/mistral-7b-instruct:free">Mistral 7B - Free</option>
                     <option value="qwen/qwen-2.5-7b-instruct:free">Qwen 2.5 - Free</option>
                     <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 - Free</option>
-                    <option value="google/learnlm-1.5-pro-experimental:free">LearnLM 1.5 - Free</option>
                     <option value="huggingfaceh4/zephyr-7b-beta:free">Zephyr 7B - Free</option>
-                    <option value="openchat/openchat-7b:free">OpenChat 7B - Free</option>
                 </optgroup>
                 <optgroup label="Pro Models">
-                    <option value="x-ai/grok-2">Grok 2 - Pro</option>
-                    <option value="google/gemini-2.0-flash-001">Gemini 2.0 - Pro</option>
+                    <option value="google/gemini-2.0-flash-001">Gemini 2.0 Pro</option>
+                    <option value="x-ai/grok-2">Grok 2 (X)</option>
                 </optgroup>
             </select>
-            <div class="flex items-center gap-2">
-                <span class="free-badge">v2.0 Beta</span>
+            <div class="flex items-center gap-3">
+                <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded border border-blue-500/20 font-bold">V2.0 STABLE</span>
             </div>
         </header>
 
-        <div id="textInterface" class="flex-1 flex flex-col overflow-hidden">
-            <div id="chatBox" class="flex-1 overflow-y-auto p-4 max-w-4xl mx-auto w-full">
-                <div id="welcomeScreen" class="py-10 text-center">
-                    <h2 class="text-3xl font-extrabold mb-8 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Creative Dashboard</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div onclick="switchMode('image')" class="dash-card bg-[#121520] border border-gray-800 p-6 rounded-2xl">
-                            <i class="fas fa-wand-magic-sparkles text-orange-500 text-2xl mb-2"></i>
-                            <h3 class="font-bold">Image Gen</h3>
-                            <p class="text-xs text-gray-500">Turn text into art</p>
+        <div id="chatContainer" class="flex-1 flex flex-col overflow-hidden relative">
+            <div id="chatBox" class="flex-1 overflow-y-auto p-6 space-y-6 max-w-5xl mx-auto w-full pb-32">
+                <div id="welcomeScreen" class="py-10">
+                    <h2 class="text-4xl font-extrabold text-center mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Creative Dashboard</h2>
+                    <p class="text-center text-gray-500 mb-10 text-sm font-medium">Select a tool to explore the power of AI</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div onclick="switchMode('chat')" class="dash-card p-6 rounded-2xl">
+                            <i class="fas fa-comment-dots text-2xl text-blue-500 mb-3"></i>
+                            <h3 class="font-bold mb-1 text-sm">AI Chat <span class="free-tag ml-1">FREE</span></h3>
+                            <p class="text-[11px] text-gray-500">Fast answers with Qwen & Llama 3.1</p>
                         </div>
-                        <div onclick="switchMode('voice')" class="dash-card bg-[#121520] border border-gray-800 p-6 rounded-2xl">
-                            <i class="fas fa-headset text-pink-500 text-2xl mb-2"></i>
-                            <h3 class="font-bold">Voice Chat</h3>
-                            <p class="text-xs text-gray-500">Talk to AI live</p>
+                        <div onclick="switchMode('image')" class="dash-card p-6 rounded-2xl">
+                            <i class="fas fa-wand-magic-sparkles text-2xl text-orange-500 mb-3"></i>
+                            <h3 class="font-bold mb-1 text-sm">Image Gen <span class="free-tag ml-1">FREE</span></h3>
+                            <p class="text-[11px] text-gray-500">Cinematic 9:16 visuals for creators</p>
+                        </div>
+                        <div onclick="switchMode('voice')" class="dash-card p-6 rounded-2xl">
+                            <i class="fas fa-headset text-2xl text-pink-500 mb-3"></i>
+                            <h3 class="font-bold mb-1 text-sm">Voice Mode <span class="free-tag ml-1">LIVE</span></h3>
+                            <p class="text-[11px] text-gray-500">Real-time voice conversation</p>
+                        </div>
+                        <div onclick="alert('Video Studio launching soon!')" class="dash-card p-6 rounded-2xl opacity-60">
+                            <i class="fas fa-video text-2xl text-red-500 mb-3"></i>
+                            <h3 class="font-bold mb-1 text-sm">Video Gen</h3>
+                            <p class="text-[11px] text-gray-500">Text to cinematic video clips</p>
+                        </div>
+                        <div onclick="alert('Music Studio launching soon!')" class="dash-card p-6 rounded-2xl opacity-60">
+                            <i class="fas fa-music text-2xl text-green-500 mb-3"></i>
+                            <h3 class="font-bold mb-1 text-sm">Music Gen</h3>
+                            <p class="text-[11px] text-gray-500">AI background beats & tracks</p>
+                        </div>
+                        <div onclick="alert('3D Studio launching soon!')" class="dash-card p-6 rounded-2xl opacity-60">
+                            <i class="fas fa-cube text-2xl text-purple-500 mb-3"></i>
+                            <h3 class="font-bold mb-1 text-sm">3D Gen</h3>
+                            <p class="text-[11px] text-gray-500">3D assets & model creation</p>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="p-4 bg-gradient-to-t from-[#0b0d14] to-transparent">
-                <div class="max-w-4xl mx-auto flex gap-2 bg-[#121520] border border-gray-700 rounded-2xl p-2">
-                    <textarea id="userInput" rows="1" placeholder="Type here..." class="flex-1 bg-transparent py-3 px-4 outline-none text-sm resize-none"></textarea>
-                    <button id="sendBtn" class="bg-blue-600 w-12 h-12 rounded-xl"><i class="fas fa-arrow-up"></i></button>
+
+            <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-[#0b0d14] via-[#0b0d14] to-transparent">
+                <div class="max-w-4xl mx-auto flex gap-2 bg-[#121520] border border-gray-800 rounded-2xl p-2 shadow-2xl focus-within:border-blue-500/50 transition">
+                    <textarea id="userInput" rows="1" placeholder="Describe your vision..." class="flex-1 bg-transparent py-3 px-4 outline-none text-sm resize-none"></textarea>
+                    <button id="sendBtn" class="bg-blue-600 w-12 h-12 rounded-xl hover:bg-blue-500 transition shadow-lg shadow-blue-600/30">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
                 </div>
             </div>
         </div>
 
         <div id="voiceInterface" class="hidden flex-1 flex-col items-center justify-center">
-            <div id="voiceOrb" class="w-32 h-32 rounded-full bg-blue-500/20 border-4 border-blue-500/50 flex items-center justify-center">
-                <i class="fas fa-microphone text-3xl text-blue-500"></i>
+            <div id="voiceOrb" class="w-40 h-40 rounded-full bg-blue-600/10 border-4 border-blue-600/20 flex items-center justify-center transition-all duration-500">
+                <i class="fas fa-microphone text-4xl text-blue-500"></i>
             </div>
-            <p id="voiceStatus" class="mt-8 text-gray-500 font-medium">Tap to talk</p>
-            <button onclick="startVoice()" class="mt-10 w-16 h-16 bg-gray-800 rounded-full border-2 border-gray-700"><i class="fas fa-play text-blue-400"></i></button>
+            <p id="voiceStatus" class="mt-10 text-gray-500 font-bold tracking-widest text-sm uppercase">Tap to speak</p>
+            <button onclick="startVoice()" class="mt-8 w-20 h-20 bg-gray-900 border-4 border-gray-800 rounded-full hover:scale-105 transition active:scale-95">
+                <i class="fas fa-play text-blue-500 text-2xl"></i>
+            </button>
         </div>
     </main>
 
     <script>
-        // --- Firebase Config (REPLACE WITH YOURS) ---
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_ID",
-            appId: "YOUR_APP_ID"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-
-        // --- Auth Logic ---
-        function login() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider);
-        }
-        function logout() { auth.signOut(); }
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('userSection').classList.remove('hidden');
-                document.getElementById('userName').innerText = user.displayName;
-                document.getElementById('userPhoto').src = user.photoURL;
-            } else {
-                document.getElementById('loginSection').classList.remove('hidden');
-                document.getElementById('userSection').classList.add('hidden');
+        // --- Smart Login (No Firebase Needed) ---
+        function smartLogin() {
+            const name = prompt("Enter your name to login:");
+            if(name) {
+                localStorage.setItem('zeyan_user', name);
+                updateUI();
             }
-        });
+        }
+        function smartLogout() {
+            localStorage.removeItem('zeyan_user');
+            updateUI();
+        }
+        function updateUI() {
+            const user = localStorage.getItem('zeyan_user');
+            if(user) {
+                document.getElementById('loginBtn').classList.add('hidden');
+                document.getElementById('userProfile').classList.remove('hidden');
+                document.getElementById('displayUserName').innerText = user;
+                document.getElementById('userInitial').innerText = user.charAt(0).toUpperCase();
+            } else {
+                document.getElementById('loginBtn').classList.remove('hidden');
+                document.getElementById('userProfile').classList.add('hidden');
+            }
+        }
+        updateUI();
 
         // --- UI & AI Logic ---
-        let activeMode = 'chat';
+        let mode = 'chat';
         function switchMode(m) {
-            activeMode = m;
-            document.getElementById('textInterface').classList.toggle('hidden', m === 'voice');
+            mode = m;
+            document.getElementById('chatContainer').classList.toggle('hidden', m === 'voice');
             document.getElementById('voiceInterface').classList.toggle('hidden', m !== 'voice');
-            document.getElementById('chatModeBtn').classList.toggle('active-tool', m === 'chat');
-            document.getElementById('imageModeBtn').classList.toggle('active-tool', m === 'image');
-            document.getElementById('voiceModeBtn').classList.toggle('active-tool', m === 'voice');
+            
+            // Sidebar buttons update
+            ['chat', 'image', 'voice'].forEach(t => {
+                const btn = document.getElementById('btn-' + t);
+                btn.classList.toggle('active-tool', t === m);
+                btn.classList.toggle('text-gray-400', t !== m);
+            });
+
+            const badge = document.getElementById('currentToolBadge');
+            if(m === 'chat') { badge.innerText = "AI Chat"; badge.style.color = "#60a5fa"; }
+            else if(m === 'image') { badge.innerText = "Image Gen"; badge.style.color = "#fb923c"; }
+            else { badge.innerText = "Voice Mode"; badge.style.color = "#f472b6"; }
         }
 
         async function handleSend() {
-            const prompt = document.getElementById('userInput').value.trim();
+            const input = document.getElementById('userInput');
+            const prompt = input.value.trim();
             if(!prompt) return;
-            if(!auth.currentUser) { alert("Please login first!"); return; }
             
             if(document.getElementById('welcomeScreen')) document.getElementById('welcomeScreen').remove();
-            document.getElementById('userInput').value = '';
+            input.value = '';
 
             const chatBox = document.getElementById('chatBox');
-            chatBox.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-blue-600 px-4 py-2 rounded-xl text-sm">${prompt}</div></div>`;
+            chatBox.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 px-5 py-3 rounded-2xl rounded-br-sm text-sm shadow-xl">${prompt}</div></div>`;
 
             const loadDiv = document.createElement('div');
-            loadDiv.innerHTML = `<div class="text-xs text-gray-500 mb-4 italic">Thinking...</div>`;
+            loadDiv.innerHTML = `<div class="flex items-center gap-2 text-xs text-gray-500 italic"><i class="fas fa-circle-notch fa-spin"></i> Processing...</div>`;
             chatBox.appendChild(loadDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
-                if(activeMode === 'image') {
+                if(mode === 'image') {
                     const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=720&height=1280&nologo=true`;
-                    loadDiv.innerHTML = `<img src="${url}" class="rounded-xl border border-gray-800 max-w-xs shadow-2xl mb-4">`;
+                    const img = new Image();
+                    img.onload = () => {
+                        loadDiv.innerHTML = `<div class="p-1 bg-gray-800 rounded-2xl border border-gray-700 inline-block shadow-2xl"><img src="${url}" class="rounded-xl max-w-xs w-full"></div>`;
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    };
+                    img.src = url;
                 } else {
                     const res = await fetch("/api/chat", {
                         method: "POST",
@@ -185,9 +217,10 @@
                         body: JSON.stringify({ model: document.getElementById('modelSelect').value, prompt: prompt })
                     });
                     const data = await res.json();
-                    loadDiv.innerHTML = `<div class="bg-gray-800 px-4 py-2 rounded-xl text-sm border border-gray-700 mb-4">${data.choices[0].message.content.replace(/\n/g, '<br>')}</div>`;
+                    if(data.error) throw new Error(data.error.message);
+                    loadDiv.innerHTML = `<div class="flex gap-4 max-w-[90%]"><div class="bg-[#121520] border border-gray-800 px-5 py-3 rounded-2xl rounded-bl-sm text-sm leading-relaxed">${data.choices[0].message.content.replace(/\n/g, '<br>')}</div></div>`;
                 }
-            } catch (e) { loadDiv.innerText = "Error: " + e.message; }
+            } catch (e) { loadDiv.innerHTML = `<div class="text-red-500 text-xs font-bold">Error: ${e.message}</div>`; }
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
@@ -196,14 +229,21 @@
 
         function startVoice() {
             const rec = new webkitSpeechRecognition();
-            rec.onstart = () => { document.getElementById('voiceOrb').classList.add('listening'); document.getElementById('voiceStatus').innerText = "Listening..."; };
+            rec.onstart = () => { 
+                document.getElementById('voiceOrb').style.boxShadow = "0 0 50px rgba(59, 130, 246, 0.5)";
+                document.getElementById('voiceStatus').innerText = "Listening..."; 
+            };
             rec.onresult = async (e) => {
                 const text = e.results[0][0].transcript;
-                const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: document.getElementById('modelSelect').value, prompt: text }) });
-                const data = await res.json();
-                const utter = new SpeechSynthesisUtterance(data.choices[0].message.content);
-                utter.onend = () => { document.getElementById('voiceOrb').classList.remove('listening'); document.getElementById('voiceStatus').innerText = "Tap to talk"; };
-                window.speechSynthesis.speak(utter);
+                document.getElementById('voiceStatus').innerText = "AI Thinking...";
+                try {
+                    const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: document.getElementById('modelSelect').value, prompt: text }) });
+                    const data = await res.json();
+                    const utter = new SpeechSynthesisUtterance(data.choices[0].message.content);
+                    utter.onstart = () => { document.getElementById('voiceStatus').innerText = "AI Speaking..."; };
+                    utter.onend = () => { document.getElementById('voiceStatus').innerText = "Tap to talk"; document.getElementById('voiceOrb').style.boxShadow = "none"; };
+                    window.speechSynthesis.speak(utter);
+                } catch(e) { document.getElementById('voiceStatus').innerText = "Voice Error."; }
             };
             rec.start();
         }
