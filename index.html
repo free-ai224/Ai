@@ -237,10 +237,10 @@
         };
 
         window.setVoiceTheme = (theme) => {
-            voiceOrb.className = voice-orb w-32 h-32 absolute transition-all duration-700 ${theme};
+            voiceOrb.className = `voice-orb w-32 h-32 absolute transition-all duration-700 ${theme}`;
         };
 
-        // Text & Image Gen Logic (Same as before)
+        // Text & Image Gen Logic
         const sendBtn = document.getElementById('sendBtn');
         const userInput = document.getElementById('userInput');
         const chatBox = document.getElementById('chatBox');
@@ -251,9 +251,10 @@
             if(document.getElementById('welcomeScreen')) document.getElementById('welcomeScreen').remove();
             
             userInput.value = '';
+            
             const uDiv = document.createElement('div');
             uDiv.className = "flex justify-end mb-6";
-            uDiv.innerHTML = <div class="bg-blue-600 px-4 py-2 rounded-xl text-sm max-w-[80%]">${prompt}</div>;
+            uDiv.innerHTML = `<div class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm max-w-[80%]">${prompt}</div>`;
             chatBox.appendChild(uDiv);
 
             if(activeMode === 'image') {
@@ -261,23 +262,44 @@
                 imgDiv.className = "mb-6 text-gray-500 text-xs italic";
                 imgDiv.innerText = "Generating Image...";
                 chatBox.appendChild(imgDiv);
-                const url = https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=720&height=1280&nologo=true;
+                
+                const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=720&height=1280&nologo=true`;
                 const img = new Image();
                 img.onload = () => {
-                    imgDiv.innerHTML = <img src="${url}" class="rounded-xl border border-gray-700 max-w-xs shadow-2xl">;
+                    imgDiv.innerHTML = `<img src="${url}" class="rounded-xl border border-gray-700 max-w-xs shadow-2xl">`;
                 };
                 img.src = url;
             } else {
-                const res = await fetch("/api/chat", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ "model": document.getElementById('modelSelect').value, "prompt": prompt })
-                });
-                const data = await res.json();
-                const aiDiv = document.createElement('div');
-                aiDiv.className = "flex mb-6";
-                aiDiv.innerHTML = <div class="bg-gray-800 px-4 py-2 rounded-xl text-sm max-w-[80%] border border-gray-700">${data.choices[0].message.content}</div>;
-                chatBox.appendChild(aiDiv);
+                const loadDiv = document.createElement('div');
+                loadDiv.className = "mb-6 text-gray-500 text-xs italic";
+                loadDiv.innerText = "AI is thinking...";
+                chatBox.appendChild(loadDiv);
+                
+                try {
+                    const res = await fetch("/api/chat", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ "model": document.getElementById('modelSelect').value, "prompt": prompt })
+                    });
+                    
+                    chatBox.removeChild(loadDiv);
+                    
+                    if(!res.ok) throw new Error("API Error");
+                    
+                    const data = await res.json();
+                    const aiDiv = document.createElement('div');
+                    aiDiv.className = "flex mb-6 w-full justify-start";
+                    
+                    const formattedContent = data.choices[0].message.content.replace(/\n/g, '<br>');
+                    aiDiv.innerHTML = `<div class="bg-gray-800 text-gray-200 px-4 py-2 rounded-xl text-sm max-w-[80%] border border-gray-700">${formattedContent}</div>`;
+                    chatBox.appendChild(aiDiv);
+                } catch (err) {
+                    if (document.body.contains(loadDiv)) chatBox.removeChild(loadDiv);
+                    const errDiv = document.createElement('div');
+                    errDiv.className = "flex mb-6 w-full justify-start";
+                    errDiv.innerHTML = `<div class="bg-red-500/10 text-red-400 px-4 py-2 rounded-xl text-sm border border-red-500/30">Error connecting to server.</div>`;
+                    chatBox.appendChild(errDiv);
+                }
             }
             chatBox.scrollTop = chatBox.scrollHeight;
         }
