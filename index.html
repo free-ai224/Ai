@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zeyan AI | Free All-in-One AI Tools</title>
+    <title>Zeyan AI | Voice & Image Studio</title>
 
     <script type='text/javascript' src='https://pl29196766.profitablecpmratenetwork.com/d6/77/5d/d6775d72799341527e7a46626c92aeb7.js'></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,10 +15,33 @@
         .free-badge { background: linear-gradient(90deg, #10b981, #3b82f6); color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; }
         .ad-container { display: flex; justify-content: center; margin: 10px 0; min-height: 90px; width: 100%; background: #0a0b10; border: 1px dashed #2d3348; align-items: center;}
         .active-tool { background: rgba(31, 41, 55, 0.8); border-color: #3b82f6; border-left: 4px solid #3b82f6; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+        
+        /* Voice Mode Animations */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); box-shadow: 0 0 0 0 var(--orb-color); opacity: 0.5; }
+            70% { transform: scale(1.2); box-shadow: 0 0 0 25px rgba(0, 0, 0, 0); opacity: 0.8; }
+            100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); opacity: 0.5; }
+        }
+        @keyframes pulse-ring-fast {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 var(--orb-color); }
+            50% { transform: scale(1.4); box-shadow: 0 0 0 40px rgba(0, 0, 0, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+        }
+        .voice-orb {
+            border-radius: 50%;
+            background: var(--orb-color);
+            filter: blur(2px);
+            animation: pulse-ring 3s infinite ease-in-out;
+        }
+        .voice-orb.listening, .voice-orb.speaking {
+            animation: pulse-ring-fast 1.2s infinite ease-in-out;
+        }
+        
+        /* Themes */
+        .theme-white { --orb-color: rgba(255, 255, 255, 0.6); }
+        .theme-blue { --orb-color: rgba(59, 130, 246, 0.7); }
+        .theme-purple { --orb-color: rgba(168, 85, 247, 0.7); }
+        .theme-green { --orb-color: rgba(34, 197, 94, 0.7); }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
@@ -32,8 +55,7 @@
         </div>
         
         <div class="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
-            <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">All-in-One Tools</div>
-            
+            <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">Studio Tools</div>
             <button id="chatModeBtn" class="w-full flex items-center justify-between p-3 rounded-lg border border-transparent active-tool transition text-sm text-gray-200">
                 <span><i class="fas fa-comment-dots w-5 text-blue-400"></i> AI Chat</span>
             </button>
@@ -41,13 +63,9 @@
                 <span><i class="fas fa-image w-5 text-orange-400"></i> Image Gen</span>
                 <span class="free-badge">FREE</span>
             </button>
-            <button class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-800/50 transition text-sm text-gray-400 hover:text-gray-200 opacity-50 cursor-not-allowed">
-                <span><i class="fas fa-video w-5 text-purple-400"></i> Video Studio</span>
-                <span class="text-[9px] text-gray-500 uppercase">Soon</span>
-            </button>
-            <button class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-800/50 transition text-sm text-gray-400 hover:text-gray-200 opacity-50 cursor-not-allowed">
-                <span><i class="fas fa-cube w-5 text-green-400"></i> 3D Animation</span>
-                <span class="text-[9px] text-gray-500 uppercase">Soon</span>
+            <button id="voiceModeBtn" class="w-full flex items-center justify-between p-3 rounded-lg border border-transparent hover:bg-gray-800/50 transition text-sm text-gray-400 hover:text-gray-200">
+                <span><i class="fas fa-microphone-lines w-5 text-pink-400"></i> Voice Mode</span>
+                <span class="free-badge" style="background: linear-gradient(90deg, #ec4899, #8b5cf6);">LIVE</span>
             </button>
         </div>
     </aside>
@@ -55,23 +73,11 @@
     <main class="flex-1 flex flex-col relative w-full h-full bg-[#0f111a]">
         
         <header class="h-14 flex items-center justify-between px-4 sm:px-6 border-b border-gray-800 bg-[#0f111a]/90 backdrop-blur-md sticky top-0 z-10">
-            <div class="flex items-center gap-3">
-                <select id="modelSelect" class="bg-gray-900 border border-gray-700 text-sm font-medium rounded-lg px-3 py-1.5 outline-none text-gray-200 cursor-pointer hover:border-blue-500 transition">
-                    <optgroup label="Free Models (Unlimited)">
-                        <option value="meta-llama/llama-3-8b-instruct:free">Llama 3 (Free)</option>
-                        <option value="mistralai/mistral-7b-instruct:free">Mistral 7B (Free)</option>
-                        <option value="google/gemma-7b-it:free">Google Gemma (Free)</option>
-                        <option value="qwen/qwen-2-7b-instruct:free">Qwen 2 (Free)</option>
-                        <option value="huggingfaceh4/zephyr-7b-beta:free">Zephyr (Free)</option>
-                    </optgroup>
-                    <optgroup label="Premium Models (Pro Plan)">
-                        <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash (Pro)</option>
-                        <option value="x-ai/grok-2">Grok 2 (Pro)</option>
-                        <option value="openai/gpt-4o-mini">GPT-4o Mini (Pro)</option>
-                    </optgroup>
-                </select>
-                <span id="currentToolBadge" class="text-[10px] font-bold text-blue-400 border border-blue-400/30 px-2 py-1 rounded uppercase">Chat Mode</span>
-            </div>
+            <select id="modelSelect" class="bg-gray-900 border border-gray-700 text-xs font-medium rounded-lg px-2 py-1 outline-none text-gray-300 cursor-pointer">
+                <option value="meta-llama/llama-3-8b-instruct:free">Llama 3 (Free)</option>
+                <option value="google/gemini-2.0-flash-001">Gemini 2.0 (Pro)</option>
+            </select>
+            <span id="currentToolBadge" class="text-[10px] font-bold text-blue-400 border border-blue-400/30 px-2 py-1 rounded uppercase tracking-tighter">Chat Mode</span>
         </header>
 
         <div class="ad-container">
@@ -81,185 +87,203 @@
             <script type="text/javascript" src="//www.highperformanceformat.com/2307df590f130a7d975a6c3821734992/invoke.js"></script>
         </div>
 
-        <div id="chatBox" class="flex-1 overflow-y-auto p-4 sm:p-6 pb-32 w-full max-w-4xl mx-auto scroll-smooth">
-            <div id="welcomeScreen" class="text-center space-y-4 py-10 sm:py-20 flex flex-col items-center">
-                <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700 shadow-xl">
-                    <i class="fas fa-robot text-3xl text-blue-500"></i>
+        <div id="textInterface" class="flex-1 flex flex-col overflow-hidden">
+            <div id="chatBox" class="flex-1 overflow-y-auto p-4 sm:p-6 pb-32 max-w-4xl mx-auto w-full">
+                <div id="welcomeScreen" class="text-center py-20 flex flex-col items-center">
+                    <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700">
+                        <i class="fas fa-bolt text-blue-500"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold">Studio Dashboard</h2>
+                    <p class="text-gray-500 text-sm">Select a tool from the sidebar to begin.</p>
                 </div>
-                <h2 class="text-3xl font-bold">How can I help you today?</h2>
-                <p class="text-gray-500 text-sm max-w-md">Use the sidebar to switch between AI Chat and High-Detail Image Generation.</p>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-[#0f111a] to-transparent">
+                <div class="max-w-4xl mx-auto flex gap-2 bg-[#1a1d27] border border-gray-700 rounded-2xl p-2 shadow-2xl">
+                    <textarea id="userInput" rows="1" placeholder="Describe your vision..." class="flex-1 bg-transparent py-3 px-3 outline-none text-sm resize-none text-gray-100"></textarea>
+                    <button id="sendBtn" class="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-blue-500 transition"><i class="fas fa-paper-plane"></i></button>
+                </div>
             </div>
         </div>
 
-        <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[#0f111a] via-[#0f111a] to-transparent pt-10 pb-6 px-4">
-            <div class="max-w-4xl mx-auto relative">
-                <div class="flex items-end gap-2 bg-[#1a1d27] border border-gray-700 rounded-2xl p-2 shadow-2xl focus-within:border-blue-500 transition-colors">
-                    <textarea id="userInput" rows="1" placeholder="Type your message here..." class="flex-1 bg-transparent py-3 px-3 focus:outline-none text-sm resize-none max-h-32 text-gray-100 placeholder-gray-500"></textarea>
-                    <button id="sendBtn" class="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-blue-500 transition font-bold shadow-lg shadow-blue-500/20">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
+        <div id="voiceInterface" class="hidden flex-1 flex-col items-center justify-center relative bg-radial-gradient">
+            <div class="absolute top-6 flex gap-2">
+                <button onclick="setVoiceTheme('theme-white')" class="w-5 h-5 rounded-full bg-white"></button>
+                <button onclick="setVoiceTheme('theme-blue')" class="w-5 h-5 rounded-full bg-blue-500"></button>
+                <button onclick="setVoiceTheme('theme-purple')" class="w-5 h-5 rounded-full bg-purple-500"></button>
             </div>
+            <div class="relative w-48 h-48 flex items-center justify-center">
+                <div id="voiceOrb" class="voice-orb theme-blue w-32 h-32 absolute transition-all duration-700"></div>
+                <i id="voiceCenterIcon" class="fas fa-microphone text-white text-3xl z-10 opacity-60"></i>
+            </div>
+            <h3 id="voiceStatusText" class="mt-12 text-xl font-medium text-gray-400">Tap mic to speak</h3>
+            <button id="micToggleBtn" class="mt-10 w-20 h-20 bg-gray-800 border-4 border-gray-700 rounded-full flex items-center justify-center shadow-2xl hover:scale-105 transition active:scale-95">
+                <i id="micIcon" class="fas fa-microphone text-blue-500 text-2xl"></i>
+            </button>
         </div>
+
     </main>
-    
-    <script type='text/javascript' src='//pl29196788.profitablecpmratenetwork.com/97/81/44/978144219e917d8480377e8a94626154.js'></script>
 
     <script>
-        const sendBtn = document.getElementById('sendBtn');
-        const userInput = document.getElementById('userInput');
-        const chatBox = document.getElementById('chatBox');
-        const modelSelect = document.getElementById('modelSelect');
-        const welcomeScreen = document.getElementById('welcomeScreen');
-        
-        // Tool Switcher Logic
-        let activeMode = 'chat'; 
+        // UI Navigation Logic
+        const textInterface = document.getElementById('textInterface');
+        const voiceInterface = document.getElementById('voiceInterface');
         const chatModeBtn = document.getElementById('chatModeBtn');
         const imageModeBtn = document.getElementById('imageModeBtn');
+        const voiceModeBtn = document.getElementById('voiceModeBtn');
         const currentToolBadge = document.getElementById('currentToolBadge');
+        let activeMode = 'chat';
 
-        chatModeBtn.onclick = () => {
-            activeMode = 'chat';
-            chatModeBtn.classList.add('active-tool', 'text-gray-200');
-            chatModeBtn.classList.remove('text-gray-400');
-            imageModeBtn.classList.remove('active-tool', 'text-gray-200');
-            imageModeBtn.classList.add('text-gray-400');
-            userInput.placeholder = "Type your message here...";
-            currentToolBadge.innerText = "Chat Mode";
-            currentToolBadge.className = "text-[10px] font-bold text-blue-400 border border-blue-400/30 px-2 py-1 rounded uppercase";
-            modelSelect.disabled = false;
-        };
+        function switchMode(mode) {
+            activeMode = mode;
+            [chatModeBtn, imageModeBtn, voiceModeBtn].forEach(b => b.classList.remove('active-tool', 'text-gray-200'));
+            textInterface.classList.add('hidden');
+            voiceInterface.classList.add('hidden');
+            document.getElementById('modelSelect').disabled = false;
 
-        imageModeBtn.onclick = () => {
-            activeMode = 'image';
-            imageModeBtn.classList.add('active-tool', 'text-gray-200');
-            imageModeBtn.classList.remove('text-gray-400');
-            chatModeBtn.classList.remove('active-tool', 'text-gray-200');
-            chatModeBtn.classList.add('text-gray-400');
-            userInput.placeholder = "Describe the image you want (e.g. realistic, cinematic lighting, 85mm lens)...";
-            currentToolBadge.innerText = "Image Mode";
-            currentToolBadge.className = "text-[10px] font-bold text-orange-400 border border-orange-400/30 px-2 py-1 rounded uppercase";
-            modelSelect.disabled = true; // Not needed for image gen
-        };
-
-        userInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight < 128 ? this.scrollHeight : 128) + 'px';
-        });
-
-        async function processInput() {
-            const prompt = userInput.value.trim();
-            if(!prompt) return;
-            
-            if(welcomeScreen) welcomeScreen.style.display = 'none';
-            userInput.value = '';
-            userInput.style.height = 'auto';
-
-            // User Message UI
-            const uDiv = document.createElement('div');
-            uDiv.className = "flex justify-end mb-6";
-            uDiv.innerHTML = `<div class="bg-[#1e293b] text-gray-100 px-5 py-3 rounded-2xl rounded-tr-sm text-sm max-w-[85%] shadow-md border border-gray-700">${prompt}</div>`;
-            chatBox.appendChild(uDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            // Loading UI
-            const loadDiv = document.createElement('div');
-            loadDiv.className = "flex justify-start mb-6 w-full";
-            loadDiv.innerHTML = `<div class="px-5 py-3 text-sm text-gray-400 flex items-center gap-2"><i class="fas fa-circle-notch fa-spin text-${activeMode === 'image' ? 'orange' : 'blue'}-500"></i> ${activeMode === 'image' ? 'Generating cinematic image...' : 'Thinking...'}</div>`;
-            chatBox.appendChild(loadDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            if (activeMode === 'image') {
-                // Free Image Generation Logic (Cinematic 9:16 aspect ratio)
-                const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=720&height=1280&nologo=true`;
-                
-                const img = new Image();
-                img.onload = () => {
-                    chatBox.removeChild(loadDiv);
-                    const aiDiv = document.createElement('div');
-                    aiDiv.className = "flex justify-start mb-6 w-full";
-                    aiDiv.innerHTML = `
-                        <div class="flex gap-4 w-full">
-                            <div class="w-8 h-8 rounded-full border border-orange-500/30 bg-orange-500/10 flex items-center justify-center shrink-0">
-                                <i class="fas fa-image text-orange-500 text-xs"></i>
-                            </div>
-                            <div class="mt-1">
-                                <img src="${imageUrl}" class="rounded-xl border border-gray-700 shadow-2xl max-w-sm w-full" alt="Generated AI Image">
-                                <a href="${imageUrl}" target="_blank" class="text-xs text-orange-400 mt-2 inline-block hover:underline"><i class="fas fa-download"></i> Download Image</a>
-                            </div>
-                        </div>`;
-                    chatBox.appendChild(aiDiv);
-                    chatBox.scrollTop = chatBox.scrollHeight;
-                };
-                img.onerror = () => {
-                    chatBox.removeChild(loadDiv);
-                    alert("Image generation failed. Please try again.");
-                };
-                img.src = imageUrl;
-
+            if(mode === 'chat') {
+                chatModeBtn.classList.add('active-tool', 'text-gray-200');
+                textInterface.classList.remove('hidden');
+                currentToolBadge.innerText = "Chat Mode";
+                currentToolBadge.className = "text-[10px] font-bold text-blue-400 border border-blue-400/30 px-2 py-1 rounded uppercase";
+            } else if(mode === 'image') {
+                imageModeBtn.classList.add('active-tool', 'text-gray-200');
+                textInterface.classList.remove('hidden');
+                document.getElementById('modelSelect').disabled = true;
+                currentToolBadge.innerText = "Image Gen";
+                currentToolBadge.className = "text-[10px] font-bold text-orange-400 border border-orange-400/30 px-2 py-1 rounded uppercase";
             } else {
-                // Chat Logic (Vercel Backend)
+                voiceModeBtn.classList.add('active-tool', 'text-gray-200');
+                voiceInterface.classList.remove('hidden');
+                voiceInterface.classList.add('flex');
+                currentToolBadge.innerText = "Voice Studio";
+                currentToolBadge.className = "text-[10px] font-bold text-pink-400 border border-pink-400/30 px-2 py-1 rounded uppercase";
+            }
+        }
+
+        chatModeBtn.onclick = () => switchMode('chat');
+        imageModeBtn.onclick = () => switchMode('image');
+        voiceModeBtn.onclick = () => switchMode('voice');
+
+        // VOICE LOGIC (STT -> API -> TTS)
+        const micToggleBtn = document.getElementById('micToggleBtn');
+        const voiceOrb = document.getElementById('voiceOrb');
+        const voiceStatusText = document.getElementById('voiceStatusText');
+        const micIcon = document.getElementById('micIcon');
+        
+        let recognition;
+        let isListening = false;
+
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                isListening = true;
+                voiceOrb.classList.add('listening');
+                voiceStatusText.innerText = "Listening...";
+                micIcon.className = "fas fa-stop text-red-500 text-2xl";
+            };
+
+            recognition.onresult = async (event) => {
+                const speechToText = event.results[0][0].transcript;
+                voiceStatusText.innerText = "Thinking...";
+                stopRecognition();
+                
+                // Send to API
                 try {
                     const response = await fetch("/api/chat", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ "model": modelSelect.value, "prompt": prompt })
+                        body: JSON.stringify({ "model": document.getElementById('modelSelect').value, "prompt": speechToText })
                     });
-                    
-                    chatBox.removeChild(loadDiv);
-
-                    // Custom Error Handling on Screen
-                    if (!response.ok) {
-                        let errorMsg = "Vercel par API Theek tarha connect nahi hui.";
-                        if (response.status === 404) errorMsg = "404 Error: Vercel ko 'api' folder mein 'chat.js' file nahi mili. Folder check karein.";
-                        else if (response.status === 500) errorMsg = "500 Error: OpenRouter API Key miss ho sakti hai ya Vercel Environment mein set nahi hui.";
-                        
-                        throw new Error(errorMsg);
-                    }
-
                     const data = await response.json();
-                    if(data.error) throw new Error(data.error.message || "OpenRouter API limits reached.");
-
-                    const aiDiv = document.createElement('div');
-                    aiDiv.className = "flex justify-start mb-6 w-full";
-                    const formattedContent = data.choices[0].message.content.replace(/\n/g, '<br>');
-                    aiDiv.innerHTML = `
-                        <div class="flex gap-4 w-full">
-                            <div class="w-8 h-8 rounded-full border border-blue-500/30 bg-blue-500/10 flex items-center justify-center shrink-0">
-                                <i class="fas fa-robot text-blue-500 text-xs"></i>
-                            </div>
-                            <div class="bg-transparent text-gray-200 text-sm max-w-[90%] leading-relaxed pt-1 w-full">
-                                ${formattedContent}
-                            </div>
-                        </div>`;
-                    chatBox.appendChild(aiDiv);
-                    chatBox.scrollTop = chatBox.scrollHeight;
-
-                } catch (err) { 
-                    if(document.body.contains(loadDiv)) chatBox.removeChild(loadDiv);
+                    const aiReply = data.choices[0].message.content;
                     
-                    // Show Error exactly in Chat so user knows what to fix
-                    const errDiv = document.createElement('div');
-                    errDiv.className = "flex justify-start mb-6 w-full";
-                    errDiv.innerHTML = `
-                        <div class="flex gap-4 w-full">
-                            <div class="w-8 h-8 rounded-full border border-red-500/30 bg-red-500/10 flex items-center justify-center shrink-0">
-                                <i class="fas fa-exclamation-triangle text-red-500 text-xs"></i>
-                            </div>
-                            <div class="bg-red-500/10 border border-red-500/30 text-red-400 text-sm p-3 rounded-xl max-w-[90%]">
-                                <b>Error:</b> ${err.message}
-                            </div>
-                        </div>`;
-                    chatBox.appendChild(errDiv);
-                    chatBox.scrollTop = chatBox.scrollHeight;
+                    // Speak Reply
+                    speakText(aiReply);
+                } catch (e) {
+                    voiceStatusText.innerText = "API Error. Check keys.";
                 }
-            }
+            };
+
+            recognition.onerror = () => stopRecognition();
+            recognition.onend = () => { if(isListening) stopRecognition(); };
         }
 
-        sendBtn.onclick = processInput;
-        userInput.addEventListener('keydown', (e) => { 
-            if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); processInput(); } 
-        });
+        function stopRecognition() {
+            isListening = false;
+            recognition.stop();
+            voiceOrb.classList.remove('listening');
+            micIcon.className = "fas fa-microphone text-blue-500 text-2xl";
+        }
+
+        function speakText(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.onstart = () => {
+                voiceOrb.classList.add('speaking');
+                voiceStatusText.innerText = "AI is speaking...";
+            };
+            utterance.onend = () => {
+                voiceOrb.classList.remove('speaking');
+                voiceStatusText.innerText = "Tap mic to speak";
+            };
+            window.speechSynthesis.speak(utterance);
+        }
+
+        micToggleBtn.onclick = () => {
+            if(isListening) stopRecognition();
+            else recognition.start();
+        };
+
+        window.setVoiceTheme = (theme) => {
+            voiceOrb.className = voice-orb w-32 h-32 absolute transition-all duration-700 ${theme};
+        };
+
+        // Text & Image Gen Logic (Same as before)
+        const sendBtn = document.getElementById('sendBtn');
+        const userInput = document.getElementById('userInput');
+        const chatBox = document.getElementById('chatBox');
+
+        async function handleSend() {
+            const prompt = userInput.value.trim();
+            if(!prompt) return;
+            if(document.getElementById('welcomeScreen')) document.getElementById('welcomeScreen').remove();
+            
+            userInput.value = '';
+            const uDiv = document.createElement('div');
+            uDiv.className = "flex justify-end mb-6";
+            uDiv.innerHTML = <div class="bg-blue-600 px-4 py-2 rounded-xl text-sm max-w-[80%]">${prompt}</div>;
+            chatBox.appendChild(uDiv);
+
+            if(activeMode === 'image') {
+                const imgDiv = document.createElement('div');
+                imgDiv.className = "mb-6 text-gray-500 text-xs italic";
+                imgDiv.innerText = "Generating Image...";
+                chatBox.appendChild(imgDiv);
+                const url = https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=720&height=1280&nologo=true;
+                const img = new Image();
+                img.onload = () => {
+                    imgDiv.innerHTML = <img src="${url}" class="rounded-xl border border-gray-700 max-w-xs shadow-2xl">;
+                };
+                img.src = url;
+            } else {
+                const res = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ "model": document.getElementById('modelSelect').value, "prompt": prompt })
+                });
+                const data = await res.json();
+                const aiDiv = document.createElement('div');
+                aiDiv.className = "flex mb-6";
+                aiDiv.innerHTML = <div class="bg-gray-800 px-4 py-2 rounded-xl text-sm max-w-[80%] border border-gray-700">${data.choices[0].message.content}</div>;
+                chatBox.appendChild(aiDiv);
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        sendBtn.onclick = handleSend;
+        userInput.onkeydown = (e) => { if(e.key==='Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
     </script>
 </body>
 </html>
