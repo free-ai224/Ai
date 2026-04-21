@@ -99,7 +99,7 @@
             </div>
             <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-[#0f111a] to-transparent">
                 <div class="max-w-4xl mx-auto flex gap-2 bg-[#1a1d27] border border-gray-700 rounded-2xl p-2 shadow-2xl">
-                    <textarea id="userInput" rows="1" placeholder="Describe your vision..." class="flex-1 bg-transparent py-3 px-3 outline-none text-sm resize-none text-gray-100"></textarea>
+                    <textarea id="userInput" rows="1" placeholder="Type your message here..." class="flex-1 bg-transparent py-3 px-3 outline-none text-sm resize-none text-gray-100"></textarea>
                     <button id="sendBtn" class="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-blue-500 transition"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
@@ -190,7 +190,6 @@
                 voiceStatusText.innerText = "Thinking...";
                 stopRecognition();
                 
-                // Send to API
                 try {
                     const response = await fetch("/api/chat", {
                         method: "POST",
@@ -198,12 +197,13 @@
                         body: JSON.stringify({ "model": document.getElementById('modelSelect').value, "prompt": speechToText })
                     });
                     const data = await response.json();
-                    const aiReply = data.choices[0].message.content;
                     
-                    // Speak Reply
+                    if (data.error) throw new Error(data.error.message);
+                    
+                    const aiReply = data.choices[0].message.content;
                     speakText(aiReply);
                 } catch (e) {
-                    voiceStatusText.innerText = "API Error. Check keys.";
+                    voiceStatusText.innerText = "Error: " + e.message;
                 }
             };
 
@@ -213,7 +213,7 @@
 
         function stopRecognition() {
             isListening = false;
-            recognition.stop();
+            if(recognition) recognition.stop();
             voiceOrb.classList.remove('listening');
             micIcon.className = "fas fa-microphone text-blue-500 text-2xl";
         }
@@ -282,11 +282,17 @@
                         body: JSON.stringify({ "model": document.getElementById('modelSelect').value, "prompt": prompt })
                     });
                     
+                    const data = await res.json();
                     chatBox.removeChild(loadDiv);
                     
-                    if(!res.ok) throw new Error("API Error");
+                    // YAHAN ASLI ERROR SCREEN PAR AAYEGA
+                    if (data.error) {
+                        throw new Error(data.error.message || "OpenRouter API Error");
+                    }
+                    if (!data.choices || !data.choices[0]) {
+                        throw new Error("Invalid response format from OpenRouter.");
+                    }
                     
-                    const data = await res.json();
                     const aiDiv = document.createElement('div');
                     aiDiv.className = "flex mb-6 w-full justify-start";
                     
@@ -297,7 +303,8 @@
                     if (document.body.contains(loadDiv)) chatBox.removeChild(loadDiv);
                     const errDiv = document.createElement('div');
                     errDiv.className = "flex mb-6 w-full justify-start";
-                    errDiv.innerHTML = `<div class="bg-red-500/10 text-red-400 px-4 py-2 rounded-xl text-sm border border-red-500/30">Error connecting to server.</div>`;
+                    // ERROR YAHAN SHOW HOGA
+                    errDiv.innerHTML = `<div class="bg-red-500/10 text-red-400 px-4 py-2 rounded-xl text-sm border border-red-500/30"><b>Error:</b> ${err.message}</div>`;
                     chatBox.appendChild(errDiv);
                 }
             }
