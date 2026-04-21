@@ -1,9 +1,12 @@
-export default async function handler(req, res) {
+module.exports = async function(req, res) {
+    // Agar request POST nahi hai toh error de
     if (req.method !== 'POST') {
         return res.status(405).json({ error: { message: 'Method Not Allowed' } });
     }
 
     const { prompt, model } = req.body;
+    
+    // Vercel dashboard se Environment Variable uthana
     const apiKey = process.env.OPENROUTER_API_KEY; 
 
     if (!apiKey) {
@@ -24,8 +27,10 @@ export default async function handler(req, res) {
         });
 
         const data = await response.json();
+        
+        // Frontend ko response wapis bhej de
         res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ error: { message: 'OpenRouter API Fetch Failed' } });
+        res.status(500).json({ error: { message: 'Something went wrong fetching from OpenRouter.' } });
     }
-}
+};
