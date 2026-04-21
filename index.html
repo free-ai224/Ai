@@ -6,7 +6,6 @@
     <title>Zeyan AI | Free All-in-One AI Tools</title>
 
     <script type='text/javascript' src='https://pl29196766.profitablecpmratenetwork.com/d6/77/5d/d6775d72799341527e7a46626c92aeb7.js'></script>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -15,8 +14,7 @@
         .glass-panel { background: rgba(20, 23, 33, 0.95); border-right: 1px solid #2d3348; }
         .free-badge { background: linear-gradient(90deg, #10b981, #3b82f6); color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; }
         .ad-container { display: flex; justify-content: center; margin: 10px 0; min-height: 90px; width: 100%; background: #0a0b10; border: 1px dashed #2d3348; align-items: center;}
-        
-        /* Custom Scrollbar */
+        .active-tool { background: rgba(31, 41, 55, 0.8); border-color: #3b82f6; border-left: 4px solid #3b82f6; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
@@ -36,27 +34,21 @@
         <div class="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
             <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">All-in-One Tools</div>
             
-            <button class="w-full flex items-center justify-between p-3 rounded-lg bg-gray-800/50 border border-gray-700 hover:bg-gray-800 transition text-sm">
+            <button id="chatModeBtn" class="w-full flex items-center justify-between p-3 rounded-lg border border-transparent active-tool transition text-sm text-gray-200">
                 <span><i class="fas fa-comment-dots w-5 text-blue-400"></i> AI Chat</span>
             </button>
-            <button class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-800/50 transition text-sm text-gray-400 hover:text-gray-200">
+            <button id="imageModeBtn" class="w-full flex items-center justify-between p-3 rounded-lg border border-transparent hover:bg-gray-800/50 transition text-sm text-gray-400 hover:text-gray-200">
                 <span><i class="fas fa-image w-5 text-orange-400"></i> Image Gen</span>
                 <span class="free-badge">FREE</span>
             </button>
-            <button class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-800/50 transition text-sm text-gray-400 hover:text-gray-200">
+            <button class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-800/50 transition text-sm text-gray-400 hover:text-gray-200 opacity-50 cursor-not-allowed">
                 <span><i class="fas fa-video w-5 text-purple-400"></i> Video Studio</span>
-                <span class="free-badge">FREE</span>
+                <span class="text-[9px] text-gray-500 uppercase">Soon</span>
             </button>
-            <button class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-800/50 transition text-sm text-gray-400 hover:text-gray-200">
+            <button class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-800/50 transition text-sm text-gray-400 hover:text-gray-200 opacity-50 cursor-not-allowed">
                 <span><i class="fas fa-cube w-5 text-green-400"></i> 3D Animation</span>
+                <span class="text-[9px] text-gray-500 uppercase">Soon</span>
             </button>
-            <button class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-800/50 transition text-sm text-gray-400 hover:text-gray-200">
-                <span><i class="fas fa-microphone-lines w-5 text-pink-400"></i> Voice/Speech</span>
-            </button>
-        </div>
-
-        <div class="p-4 border-t border-gray-800 text-center">
-            <p class="text-[10px] text-gray-500 uppercase tracking-widest">Powered by Ismail Studio</p>
         </div>
     </aside>
 
@@ -64,24 +56,22 @@
         
         <header class="h-14 flex items-center justify-between px-4 sm:px-6 border-b border-gray-800 bg-[#0f111a]/90 backdrop-blur-md sticky top-0 z-10">
             <div class="flex items-center gap-3">
-                <i class="fas fa-bars md:hidden text-gray-400 text-lg cursor-pointer"></i>
                 <select id="modelSelect" class="bg-gray-900 border border-gray-700 text-sm font-medium rounded-lg px-3 py-1.5 outline-none text-gray-200 cursor-pointer hover:border-blue-500 transition">
-                    <optgroup label="Free Models">
+                    <optgroup label="Free Models (Unlimited)">
                         <option value="meta-llama/llama-3-8b-instruct:free">Llama 3 (Free)</option>
-                        <option value="google/gemma-7b-it:free">Google Gemma (Free)</option>
                         <option value="mistralai/mistral-7b-instruct:free">Mistral 7B (Free)</option>
+                        <option value="google/gemma-7b-it:free">Google Gemma (Free)</option>
+                        <option value="qwen/qwen-2-7b-instruct:free">Qwen 2 (Free)</option>
+                        <option value="huggingfaceh4/zephyr-7b-beta:free">Zephyr (Free)</option>
                     </optgroup>
-                    <optgroup label="Premium Models (Keys Required)">
-                        <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash</option>
-                        <option value="x-ai/grok-2">Grok 2</option>
-                        <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                    <optgroup label="Premium Models (Pro Plan)">
+                        <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash (Pro)</option>
+                        <option value="x-ai/grok-2">Grok 2 (Pro)</option>
+                        <option value="openai/gpt-4o-mini">GPT-4o Mini (Pro)</option>
                     </optgroup>
                 </select>
+                <span id="currentToolBadge" class="text-[10px] font-bold text-blue-400 border border-blue-400/30 px-2 py-1 rounded uppercase">Chat Mode</span>
             </div>
-            
-            <a href="#" class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/30 text-green-500 text-xs font-bold rounded-lg hover:bg-green-500/20 transition">
-                <i class="fab fa-android"></i> Get App
-            </a>
         </header>
 
         <div class="ad-container">
@@ -92,38 +82,22 @@
         </div>
 
         <div id="chatBox" class="flex-1 overflow-y-auto p-4 sm:p-6 pb-32 w-full max-w-4xl mx-auto scroll-smooth">
-            
             <div id="welcomeScreen" class="text-center space-y-4 py-10 sm:py-20 flex flex-col items-center">
                 <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700 shadow-xl">
                     <i class="fas fa-robot text-3xl text-blue-500"></i>
                 </div>
                 <h2 class="text-3xl font-bold">How can I help you today?</h2>
-                <p class="text-gray-500 text-sm max-w-md">Generate text, images, videos, and 3D animations using the world's most powerful AI models.</p>
-                
-                <div class="w-full max-w-md mt-6 rounded-xl overflow-hidden shadow-lg border border-gray-800">
-                    <script async="async" data-cfasync="false" src="//www.highperformanceformat.com/79668478906660144d18809462d7c570/invoke.js"></script>
-                    <div id="container-79668478906660144d18809462d7c570"></div>
-                </div>
+                <p class="text-gray-500 text-sm max-w-md">Use the sidebar to switch between AI Chat and High-Detail Image Generation.</p>
             </div>
-
         </div>
 
         <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[#0f111a] via-[#0f111a] to-transparent pt-10 pb-6 px-4">
             <div class="max-w-4xl mx-auto relative">
                 <div class="flex items-end gap-2 bg-[#1a1d27] border border-gray-700 rounded-2xl p-2 shadow-2xl focus-within:border-blue-500 transition-colors">
-                    
-                    <button class="p-3 text-gray-400 hover:text-white transition">
-                        <i class="fas fa-paperclip"></i>
+                    <textarea id="userInput" rows="1" placeholder="Type your message here..." class="flex-1 bg-transparent py-3 px-3 focus:outline-none text-sm resize-none max-h-32 text-gray-100 placeholder-gray-500"></textarea>
+                    <button id="sendBtn" class="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-blue-500 transition font-bold shadow-lg shadow-blue-500/20">
+                        <i class="fas fa-paper-plane"></i>
                     </button>
-                    
-                    <textarea id="userInput" rows="1" placeholder="Type your prompt here..." class="flex-1 bg-transparent py-3 px-2 focus:outline-none text-sm resize-none max-h-32 text-gray-100 placeholder-gray-500"></textarea>
-                    
-                    <button id="sendBtn" class="bg-white text-black w-10 h-10 rounded-xl flex items-center justify-center hover:bg-gray-200 transition font-bold disabled:opacity-50">
-                        <i class="fas fa-arrow-up"></i>
-                    </button>
-                </div>
-                <div class="text-center mt-3 text-xs text-gray-500">
-                    Zeyan AI can make mistakes. Consider verifying important information.
                 </div>
             </div>
         </div>
@@ -137,95 +111,154 @@
         const chatBox = document.getElementById('chatBox');
         const modelSelect = document.getElementById('modelSelect');
         const welcomeScreen = document.getElementById('welcomeScreen');
+        
+        // Tool Switcher Logic
+        let activeMode = 'chat'; 
+        const chatModeBtn = document.getElementById('chatModeBtn');
+        const imageModeBtn = document.getElementById('imageModeBtn');
+        const currentToolBadge = document.getElementById('currentToolBadge');
 
-        // Auto-resize textarea
+        chatModeBtn.onclick = () => {
+            activeMode = 'chat';
+            chatModeBtn.classList.add('active-tool', 'text-gray-200');
+            chatModeBtn.classList.remove('text-gray-400');
+            imageModeBtn.classList.remove('active-tool', 'text-gray-200');
+            imageModeBtn.classList.add('text-gray-400');
+            userInput.placeholder = "Type your message here...";
+            currentToolBadge.innerText = "Chat Mode";
+            currentToolBadge.className = "text-[10px] font-bold text-blue-400 border border-blue-400/30 px-2 py-1 rounded uppercase";
+            modelSelect.disabled = false;
+        };
+
+        imageModeBtn.onclick = () => {
+            activeMode = 'image';
+            imageModeBtn.classList.add('active-tool', 'text-gray-200');
+            imageModeBtn.classList.remove('text-gray-400');
+            chatModeBtn.classList.remove('active-tool', 'text-gray-200');
+            chatModeBtn.classList.add('text-gray-400');
+            userInput.placeholder = "Describe the image you want (e.g. realistic, cinematic lighting, 85mm lens)...";
+            currentToolBadge.innerText = "Image Mode";
+            currentToolBadge.className = "text-[10px] font-bold text-orange-400 border border-orange-400/30 px-2 py-1 rounded uppercase";
+            modelSelect.disabled = true; // Not needed for image gen
+        };
+
         userInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight < 128 ? this.scrollHeight : 128) + 'px';
         });
 
-        async function talkToAI() {
+        async function processInput() {
             const prompt = userInput.value.trim();
             if(!prompt) return;
             
-            // Remove welcome screen on first message
             if(welcomeScreen) welcomeScreen.style.display = 'none';
-
-            // Reset Input
             userInput.value = '';
             userInput.style.height = 'auto';
 
             // User Message UI
             const uDiv = document.createElement('div');
             uDiv.className = "flex justify-end mb-6";
-            uDiv.innerHTML = <div class="bg-blue-600 text-white px-5 py-3 rounded-2xl rounded-tr-sm text-sm max-w-[85%] sm:max-w-[75%] shadow-md leading-relaxed whitespace-pre-wrap">${prompt}</div>;
+            uDiv.innerHTML = `<div class="bg-[#1e293b] text-gray-100 px-5 py-3 rounded-2xl rounded-tr-sm text-sm max-w-[85%] shadow-md border border-gray-700">${prompt}</div>`;
             chatBox.appendChild(uDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            // Loading Indicator UI
+            // Loading UI
             const loadDiv = document.createElement('div');
             loadDiv.className = "flex justify-start mb-6 w-full";
-            loadDiv.innerHTML = <div class="px-5 py-3 text-sm text-gray-400 flex items-center gap-2"><i class="fas fa-circle-notch fa-spin"></i> Generating response...</div>;
+            loadDiv.innerHTML = `<div class="px-5 py-3 text-sm text-gray-400 flex items-center gap-2"><i class="fas fa-circle-notch fa-spin text-${activeMode === 'image' ? 'orange' : 'blue'}-500"></i> ${activeMode === 'image' ? 'Generating cinematic image...' : 'Thinking...'}</div>`;
             chatBox.appendChild(loadDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            try {
-                // Yahan ab direct Vercel API ko call ja rahi hai
-                const response = await fetch("/api/chat", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        "model": modelSelect.value,
-                        "prompt": prompt
-                    })
-                });
+            if (activeMode === 'image') {
+                // Free Image Generation Logic (Cinematic 9:16 aspect ratio)
+                const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=720&height=1280&nologo=true`;
                 
-                const data = await response.json();
-                chatBox.removeChild(loadDiv); // Remove loading
-
-                if(data.error) {
-                    throw new Error(data.error.message || "API Error");
-                }
-
-                // AI Response UI
-                const aiDiv = document.createElement('div');
-                aiDiv.className = "flex justify-start mb-6 w-full";
-                
-                const formattedContent = data.choices[0].message.content.replace(/\n/g, '<br>');
-                
-                aiDiv.innerHTML = `
-                    <div class="flex gap-4 w-full">
-                        <div class="w-8 h-8 rounded-full border border-gray-700 bg-gray-800 flex items-center justify-center shrink-0">
-                            <i class="fas fa-robot text-gray-400 text-xs"></i>
-                        </div>
-                        <div class="bg-transparent text-gray-200 text-sm max-w-[90%] leading-relaxed pt-1 w-full">
-                            ${formattedContent}
-                            
-                            <div class="mt-4 flex gap-3 text-gray-500">
-                                <button class="hover:text-gray-300 transition"><i class="far fa-copy"></i></button>
-                                <button class="hover:text-gray-300 transition"><i class="far fa-thumbs-up"></i></button>
-                                <button class="hover:text-gray-300 transition"><i class="far fa-thumbs-down"></i></button>
+                const img = new Image();
+                img.onload = () => {
+                    chatBox.removeChild(loadDiv);
+                    const aiDiv = document.createElement('div');
+                    aiDiv.className = "flex justify-start mb-6 w-full";
+                    aiDiv.innerHTML = `
+                        <div class="flex gap-4 w-full">
+                            <div class="w-8 h-8 rounded-full border border-orange-500/30 bg-orange-500/10 flex items-center justify-center shrink-0">
+                                <i class="fas fa-image text-orange-500 text-xs"></i>
                             </div>
-                        </div>
-                    </div>`;
-                chatBox.appendChild(aiDiv);
-                chatBox.scrollTop = chatBox.scrollHeight;
+                            <div class="mt-1">
+                                <img src="${imageUrl}" class="rounded-xl border border-gray-700 shadow-2xl max-w-sm w-full" alt="Generated AI Image">
+                                <a href="${imageUrl}" target="_blank" class="text-xs text-orange-400 mt-2 inline-block hover:underline"><i class="fas fa-download"></i> Download Image</a>
+                            </div>
+                        </div>`;
+                    chatBox.appendChild(aiDiv);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                };
+                img.onerror = () => {
+                    chatBox.removeChild(loadDiv);
+                    alert("Image generation failed. Please try again.");
+                };
+                img.src = imageUrl;
 
-            } catch (err) { 
-                chatBox.removeChild(loadDiv);
-                alert("Error: Server se connection nahi ho pa raha. Make sure Vercel par Environment Variable set hai."); 
+            } else {
+                // Chat Logic (Vercel Backend)
+                try {
+                    const response = await fetch("/api/chat", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ "model": modelSelect.value, "prompt": prompt })
+                    });
+                    
+                    chatBox.removeChild(loadDiv);
+
+                    // Custom Error Handling on Screen
+                    if (!response.ok) {
+                        let errorMsg = "Vercel par API Theek tarha connect nahi hui.";
+                        if (response.status === 404) errorMsg = "404 Error: Vercel ko 'api' folder mein 'chat.js' file nahi mili. Folder check karein.";
+                        else if (response.status === 500) errorMsg = "500 Error: OpenRouter API Key miss ho sakti hai ya Vercel Environment mein set nahi hui.";
+                        
+                        throw new Error(errorMsg);
+                    }
+
+                    const data = await response.json();
+                    if(data.error) throw new Error(data.error.message || "OpenRouter API limits reached.");
+
+                    const aiDiv = document.createElement('div');
+                    aiDiv.className = "flex justify-start mb-6 w-full";
+                    const formattedContent = data.choices[0].message.content.replace(/\n/g, '<br>');
+                    aiDiv.innerHTML = `
+                        <div class="flex gap-4 w-full">
+                            <div class="w-8 h-8 rounded-full border border-blue-500/30 bg-blue-500/10 flex items-center justify-center shrink-0">
+                                <i class="fas fa-robot text-blue-500 text-xs"></i>
+                            </div>
+                            <div class="bg-transparent text-gray-200 text-sm max-w-[90%] leading-relaxed pt-1 w-full">
+                                ${formattedContent}
+                            </div>
+                        </div>`;
+                    chatBox.appendChild(aiDiv);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+
+                } catch (err) { 
+                    if(document.body.contains(loadDiv)) chatBox.removeChild(loadDiv);
+                    
+                    // Show Error exactly in Chat so user knows what to fix
+                    const errDiv = document.createElement('div');
+                    errDiv.className = "flex justify-start mb-6 w-full";
+                    errDiv.innerHTML = `
+                        <div class="flex gap-4 w-full">
+                            <div class="w-8 h-8 rounded-full border border-red-500/30 bg-red-500/10 flex items-center justify-center shrink-0">
+                                <i class="fas fa-exclamation-triangle text-red-500 text-xs"></i>
+                            </div>
+                            <div class="bg-red-500/10 border border-red-500/30 text-red-400 text-sm p-3 rounded-xl max-w-[90%]">
+                                <b>Error:</b> ${err.message}
+                            </div>
+                        </div>`;
+                    chatBox.appendChild(errDiv);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
             }
         }
 
-        sendBtn.onclick = talkToAI;
-        
+        sendBtn.onclick = processInput;
         userInput.addEventListener('keydown', (e) => { 
-            if(e.key === 'Enter' && !e.shiftKey) { 
-                e.preventDefault(); 
-                talkToAI(); 
-            } 
+            if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); processInput(); } 
         });
     </script>
 </body>
