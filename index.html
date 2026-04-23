@@ -3,84 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zeyan AI Studio | Universal Hub</title>
+    <title>Zeyan AI | Studio</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0b0d14; color: #e5e7eb; overflow: hidden; }
-        .glass-panel { background: rgba(16, 19, 28, 0.95); border-right: 1px solid #1f2536; }
-        .active-tool { background: rgba(37, 99, 235, 0.1); border-color: #3b82f6; border-left: 4px solid #3b82f6; color: #fff;}
-        .dash-card { transition: all 0.3s ease; cursor: pointer; background: #121520; border: 1px solid #1f2536; border-radius: 24px; padding: 24px; text-align: center; }
-        .dash-card:hover { transform: translateY(-5px); border-color: #3b82f6; background: #161a29; }
-        .ai-msg { background: #121520; border: 1px solid #1f2536; border-radius: 20px 20px 20px 0; }
-        .user-msg { background: #2563eb; border-radius: 20px 20px 0 20px; }
-        ::-webkit-scrollbar { width: 5px; }
+        .glass-panel { background: rgba(16, 19, 28, 0.98); border-right: 1px solid #1f2536; }
+        .active-tool { background: rgba(37, 99, 235, 0.2); border-color: #3b82f6; color: #fff;}
+        .ai-msg { background: #161b29; border: 1px solid #1f2536; border-radius: 18px 18px 18px 0; }
+        .user-msg { background: #2563eb; border-radius: 18px 18px 0 18px; }
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #1f2536; border-radius: 10px; }
+        
+        /* Mobile Sidebar Toggle */
+        @media (max-width: 768px) {
+            .sidebar-closed { transform: translateX(-100%); }
+            .sidebar-open { transform: translateX(0); }
+        }
     </style>
 </head>
-<body class="flex h-screen">
+<body class="flex h-screen relative">
 
-    <aside class="hidden md:flex w-64 flex-col glass-panel shadow-2xl z-20">
-        <div class="p-6 border-b border-gray-800 flex items-center gap-3">
-            <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg"><i class="fas fa-bolt text-white"></i></div>
-            <h1 class="text-xl font-black italic">ZEYAN<span class="text-blue-500">AI</span></h1>
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 z-50 glass-panel shadow-2xl transition-transform duration-300 sidebar-closed md:relative md:transform-none">
+        <div class="p-5 border-b border-gray-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center"><i class="fas fa-bolt text-sm"></i></div>
+                <h1 class="text-lg font-black italic">ZEYAN<span class="text-blue-500 text-sm">AI</span></h1>
+            </div>
+            <button onclick="toggleSidebar()" class="md:hidden text-gray-400"><i class="fas fa-times"></i></button>
         </div>
-        <div class="flex-1 px-3 py-4 space-y-2">
-            <button onclick="switchMode('chat')" id="btn-chat" class="w-full flex items-center p-3 rounded-xl active-tool text-sm font-medium transition"><i class="fas fa-comment-dots w-6 text-blue-400"></i> AI Chat</button>
-            <button onclick="switchMode('image')" id="btn-image" class="w-full flex items-center p-3 rounded-xl text-sm text-gray-400 hover:text-white transition"><i class="fas fa-image w-6 text-orange-400"></i> Image Gen</button>
-            <button onclick="switchMode('voice')" id="btn-voice" class="w-full flex items-center p-3 rounded-xl text-sm text-gray-400 hover:text-white transition"><i class="fas fa-microphone-lines w-6 text-pink-400"></i> Voice Mode</button>
+        <div class="p-3 space-y-2">
+            <button onclick="switchMode('chat')" id="btn-chat" class="w-full flex items-center p-3 rounded-xl active-tool text-sm transition"><i class="fas fa-comment-dots w-6 text-blue-400"></i> Chat & Voice</button>
+            <button onclick="switchMode('image')" id="btn-image" class="w-full flex items-center p-3 rounded-xl text-sm text-gray-400 hover:bg-gray-800 transition"><i class="fas fa-wand-magic-sparkles w-6 text-orange-400"></i> Image Gen</button>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col relative bg-[#0b0d14]">
-        <header class="h-16 flex items-center justify-between px-6 border-b border-gray-800/50 bg-[#0b0d14]/80 backdrop-blur-md z-10">
-            <select id="modelSelect" class="bg-[#121520] border border-gray-700 text-xs font-bold rounded-xl px-4 py-2 outline-none text-gray-200 focus:border-blue-500">
-                <option value="mistralai/mistral-7b-instruct:free">Mistral 7B (Free)</option>
-                <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 (Free)</option>
-                <option value="google/gemini-2.0-flash-001">Gemini 2.0 Pro</option>
-            </select>
-            <button onclick="window.speechSynthesis.cancel()" class="text-[10px] text-red-400 border border-red-400/20 px-3 py-1 rounded-full hover:bg-red-400/10">Stop Voice</button>
+    <main class="flex-1 flex flex-col min-w-0 bg-[#0b0d14]">
+        <header class="h-14 flex items-center justify-between px-4 border-b border-gray-800/50 bg-[#0b0d14]/90 backdrop-blur-md z-10">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="md:hidden w-8 h-8 flex items-center justify-center bg-gray-800 rounded-lg"><i class="fas fa-bars text-xs"></i></button>
+                <select id="modelSelect" class="bg-[#121520] border border-gray-700 text-[10px] font-bold rounded-lg px-2 py-1.5 outline-none text-gray-300 focus:border-blue-500">
+                    <option value="mistralai/mistral-7b-instruct:free">Mistral 7B (Free)</option>
+                    <option value="google/gemini-2.0-flash-001">Gemini 2.0 Pro</option>
+                </select>
+            </div>
+            <span class="text-[9px] font-black text-blue-400 bg-blue-400/10 px-2 py-1 rounded border border-blue-400/20 uppercase tracking-tighter">V2.2 Stable</span>
         </header>
 
         <div id="chatContainer" class="flex-1 flex flex-col overflow-hidden relative">
-            <div id="chatBox" class="flex-1 overflow-y-auto p-6 space-y-6 max-w-4xl mx-auto w-full pb-40">
+            <div id="chatBox" class="flex-1 overflow-y-auto p-4 space-y-5 w-full max-w-3xl mx-auto pb-32">
                 <div id="welcomeScreen" class="py-10 text-center">
-                    <h2 class="text-5xl font-black text-white mb-4 italic tracking-tighter">ZEYAN <span class="text-blue-500 uppercase">Studio</span></h2>
-                    <p class="text-gray-500 mb-12 font-medium">Text to Voice & Image Generator</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
-                        <div onclick="switchMode('chat')" class="dash-card"><i class="fas fa-robot text-3xl text-blue-500 mb-4"></i><h3 class="font-bold">Chat & Voice</h3></div>
-                        <div onclick="switchMode('image')" class="dash-card"><i class="fas fa-magic text-3xl text-orange-500 mb-4"></i><h3 class="font-bold">Free Image</h3></div>
-                    </div>
+                    <h2 class="text-3xl font-black text-white mb-2 italic tracking-tighter">ZEYAN <span class="text-blue-500">STUDIO</span></h2>
+                    <p class="text-xs text-gray-500">AI Chat, Voice & Images</p>
                 </div>
             </div>
 
-            <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-[#0b0d14] to-transparent">
-                <div class="max-w-3xl mx-auto flex gap-3 bg-[#161a29] border border-gray-800 rounded-3xl p-2 shadow-2xl">
-                    <textarea id="userInput" rows="1" placeholder="Type message or image prompt..." class="flex-1 bg-transparent py-3 px-4 outline-none text-sm resize-none"></textarea>
-                    <button id="sendBtn" class="bg-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-blue-500 transition"><i class="fas fa-paper-plane text-white"></i></button>
+            <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-[#0b0d14] via-[#0b0d14] to-transparent">
+                <div class="max-w-2xl mx-auto flex gap-2 bg-[#161a29] border border-gray-800 rounded-full p-1.5 shadow-2xl focus-within:border-blue-500/50 transition">
+                    <textarea id="userInput" rows="1" placeholder="Ask anything..." class="flex-1 bg-transparent py-2.5 px-4 outline-none text-sm resize-none text-gray-100 placeholder:text-gray-600"></textarea>
+                    <button id="sendBtn" class="bg-blue-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-500 transition shadow-lg"><i class="fas fa-paper-plane text-xs text-white"></i></button>
                 </div>
             </div>
-        </div>
-
-        <div id="voiceInterface" class="hidden flex-1 flex-col items-center justify-center">
-            <div id="voiceOrb" class="w-40 h-40 rounded-full bg-blue-600/10 border-4 border-blue-600/20 flex items-center justify-center">
-                <i class="fas fa-microphone text-4xl text-blue-500"></i>
-            </div>
-            <p id="voiceStatus" class="mt-8 text-gray-500 uppercase font-black text-xs tracking-widest">Tap to Talk</p>
-            <button onclick="startVoice()" class="mt-8 w-20 h-20 bg-gray-900 border-4 border-gray-800 rounded-full flex items-center justify-center">
-                <i class="fas fa-play text-blue-500 text-2xl"></i>
-            </button>
         </div>
     </main>
 
     <script>
+        // Sidebar Logic
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            sb.classList.toggle('sidebar-closed');
+            sb.classList.toggle('sidebar-open');
+        }
+
         let mode = 'chat';
         function switchMode(m) {
             mode = m;
-            document.getElementById('chatContainer').classList.toggle('hidden', m === 'voice');
-            document.getElementById('voiceInterface').classList.toggle('hidden', m !== 'voice');
+            if(window.innerWidth < 768) toggleSidebar();
             document.querySelectorAll('aside button').forEach(b => b.classList.remove('active-tool'));
             document.getElementById('btn-' + m).classList.add('active-tool');
         }
@@ -90,22 +90,22 @@
             const prompt = input.value.trim();
             if(!prompt) return;
             
-            if(document.getElementById('welcomeScreen')) document.getElementById('welcomeScreen').remove();
+            document.getElementById('welcomeScreen')?.remove();
             input.value = '';
 
             const chatBox = document.getElementById('chatBox');
-            chatBox.innerHTML += `<div class="flex justify-end mb-4"><div class="user-msg text-white px-5 py-3 text-sm shadow-xl max-w-[85%]">${prompt}</div></div>`;
+            chatBox.innerHTML += `<div class="flex justify-end"><div class="user-msg text-white px-4 py-2 text-sm shadow-md max-w-[85%]">${prompt}</div></div>`;
 
             const loadDiv = document.createElement('div');
-            loadDiv.className = "flex justify-start mb-4 italic text-gray-500 text-xs animate-pulse";
-            loadDiv.innerText = "Processing...";
+            loadDiv.className = "flex justify-start italic text-gray-600 text-[10px]";
+            loadDiv.innerText = "Zeyan AI is thinking...";
             chatBox.appendChild(loadDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
                 if(mode === 'image') {
                     const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=720&height=1280&nologo=true&seed=${Math.floor(Math.random()*9999)}`;
-                    loadDiv.innerHTML = `<div class="p-1 bg-[#121520] rounded-2xl border border-gray-800 inline-block shadow-2xl"><img src="${url}" class="rounded-xl max-w-sm w-full"></div>`;
+                    loadDiv.innerHTML = `<div class="p-1 bg-[#121520] rounded-2xl border border-gray-800 shadow-lg inline-block"><img src="${url}" class="rounded-xl max-w-full"></div>`;
                 } else {
                     const res = await fetch("/api/chat", {
                         method: "POST",
@@ -113,36 +113,21 @@
                         body: JSON.stringify({ model: document.getElementById('modelSelect').value, prompt: prompt })
                     });
                     const data = await res.json();
-                    
                     if(data.error) throw new Error(data.error.message);
                     
                     const aiText = data.choices[0].message.content;
-                    loadDiv.innerHTML = `<div class="ai-msg text-gray-200 px-5 py-3 text-sm max-w-[90%] shadow-lg leading-relaxed">${aiText.replace(/\n/g, '<br>')}</div>`;
+                    loadDiv.innerHTML = `<div class="ai-msg text-gray-200 px-4 py-2.5 text-sm max-w-[90%] shadow-sm leading-relaxed">${aiText.replace(/\n/g, '<br>')}</div>`;
                     
-                    // Text to Voice
+                    // Auto Voice
                     const utter = new SpeechSynthesisUtterance(aiText);
                     window.speechSynthesis.speak(utter);
                 }
-            } catch (e) { loadDiv.innerHTML = `<div class="text-red-500 text-xs font-bold bg-red-500/10 p-3 rounded-xl border border-red-500/20">System Alert: OpenRouter connection issue. Please check API Credits or try Gemini Pro.</div>`; }
+            } catch (e) { loadDiv.innerHTML = `<div class="text-red-500 text-[10px] font-bold bg-red-500/10 p-2 rounded-lg border border-red-500/20">Connection Issue. Check API or Credits.</div>`; }
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
         document.getElementById('sendBtn').onclick = handleSend;
         document.getElementById('userInput').onkeydown = (e) => { if(e.key==='Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
-
-        function startVoice() {
-            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            rec.onstart = () => { document.getElementById('voiceStatus').innerText = "Listening..."; };
-            rec.onresult = async (e) => {
-                const text = e.results[0][0].transcript;
-                const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: document.getElementById('modelSelect').value, prompt: text }) });
-                const data = await res.json();
-                const aiMsg = data.choices[0].message.content;
-                const utter = new SpeechSynthesisUtterance(aiMsg);
-                window.speechSynthesis.speak(utter);
-            };
-            rec.start();
-        }
     </script>
 </body>
 </html>
