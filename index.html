@@ -3,22 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zeyan AI | Universal Creative Studio</title>
+    <title>Zeyan AI Studio | Free Hub</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-        
-        body { font-family: 'Inter', sans-serif; background-color: #0b0d14; color: #e5e7eb; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #0b0d14; color: #e5e7eb; overflow: hidden; }
         .glass-panel { background: rgba(16, 19, 28, 0.95); border-right: 1px solid #1f2536; }
         .active-tool { background: rgba(37, 99, 235, 0.1); border-color: #3b82f6; border-left: 4px solid #3b82f6; color: #fff;}
-        
-        .dash-card { transition: all 0.3s ease; cursor: pointer; background: #121520; border: 1px solid #1f2536; position: relative; overflow: hidden; }
-        .dash-card:hover { transform: translateY(-5px); border-color: rgba(59, 130, 246, 0.5); background: #161a29; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); }
-        
-        .free-tag { font-size: 9px; background: linear-gradient(90deg, #10b981, #3b82f6); color: white; padding: 1px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
-        
+        .dash-card { transition: all 0.3s ease; cursor: pointer; background: #121520; border: 1px solid #1f2536; border-radius: 24px; padding: 24px; }
+        .dash-card:hover { transform: translateY(-5px); border-color: #3b82f6; background: #161a29; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #1f2536; border-radius: 10px; }
     </style>
@@ -27,127 +22,82 @@
 
     <aside class="hidden md:flex w-64 flex-col glass-panel shadow-2xl z-20">
         <div class="p-6 border-b border-gray-800 flex items-center gap-3">
-            <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30">
-                <i class="fas fa-bolt text-white text-lg"></i>
+            <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                <i class="fas fa-bolt text-white"></i>
             </div>
-            <h1 class="text-xl font-extrabold tracking-tighter italic text-white">ZEYAN<span class="text-blue-500">AI</span></h1>
+            <h1 class="text-xl font-black italic">ZEYAN<span class="text-blue-500">AI</span></h1>
         </div>
 
-        <div class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-            <div id="authSection" class="mb-8">
-                <button id="loginBtn" onclick="smartLogin()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-500 transition shadow-lg shadow-blue-600/20">
-                    <i class="fas fa-user-astronaut mr-2"></i> Sign In
-                </button>
-                <div id="userProfile" class="hidden p-4 bg-gray-900/40 rounded-2xl border border-gray-800">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-lg" id="userInitial">?</div>
-                        <div class="overflow-hidden">
-                            <p id="displayUserName" class="text-xs font-bold truncate text-gray-100">User Name</p>
-                            <p onclick="smartLogout()" class="text-[10px] text-red-500 font-semibold cursor-pointer hover:text-red-400 transition uppercase tracking-tighter">Sign Out</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em] px-3 mb-3">Main Tools</div>
-            <button onclick="switchMode('chat')" id="btn-chat" class="w-full flex items-center p-3 rounded-xl active-tool text-sm transition font-medium"><i class="fas fa-comment-dots w-6 text-blue-400"></i> AI Chat</button>
-            <button onclick="switchMode('image')" id="btn-image" class="w-full flex items-center p-3 rounded-xl text-sm text-gray-400 hover:text-gray-100 transition font-medium"><i class="fas fa-wand-magic-sparkles w-6 text-orange-400"></i> Image Gen</button>
-            <button onclick="switchMode('voice')" id="btn-voice" class="w-full flex items-center p-3 rounded-xl text-sm text-gray-400 hover:text-gray-100 transition font-medium"><i class="fas fa-microphone-lines w-6 text-pink-400"></i> Voice Mode</button>
+        <div class="flex-1 px-3 py-4 space-y-1">
+            <div class="text-[10px] font-bold text-gray-600 uppercase tracking-widest px-3 mb-3">Available Tools</div>
+            <button onclick="switchMode('chat')" id="btn-chat" class="w-full flex items-center p-3 rounded-xl active-tool text-sm font-medium transition"><i class="fas fa-comment-dots w-6 text-blue-400"></i> AI Chat (Free)</button>
+            <button onclick="switchMode('image')" id="btn-image" class="w-full flex items-center p-3 rounded-xl text-sm text-gray-400 hover:text-white transition"><i class="fas fa-image w-6 text-orange-400"></i> Image Gen (Free)</button>
+        </div>
+        
+        <div class="p-4 border-t border-gray-800">
+            <div class="text-[10px] text-gray-500 font-bold uppercase">Status: <span class="text-green-500">Online</span></div>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col relative bg-[#0b0d14]">
-        <header class="h-16 flex items-center justify-between px-8 border-b border-gray-800/50 bg-[#0b0d14]/80 backdrop-blur-xl z-10">
-            <select id="modelSelect" class="bg-[#121520] border border-gray-700 text-xs font-bold rounded-xl px-4 py-2 outline-none text-gray-200 focus:border-blue-500 transition cursor-pointer">
-                <option value="mistralai/mistral-7b-instruct:free">Mistral 7B (Fast) - Free</option>
-                <option value="google/gemma-2-9b-it:free">Gemma 2 9B - Free</option>
-                <option value="google/gemini-2.0-flash-001">Gemini 2.0 Pro</option>
-                <option value="x-ai/grok-2">Grok 2 (X) - Pro</option>
+        <header class="h-16 flex items-center justify-between px-8 border-b border-gray-800/50 bg-[#0b0d14]/80 backdrop-blur-md z-10">
+            <select id="modelSelect" class="bg-[#121520] border border-gray-700 text-xs font-bold rounded-xl px-4 py-2 outline-none text-gray-200 focus:border-blue-500 cursor-pointer">
+                <option value="mistralai/mistral-7b-instruct:free">Mistral 7B (Fast & Free)</option>
+                <option value="google/gemma-2-9b-it:free">Gemma 2 9B (Free)</option>
+                <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 (Free)</option>
             </select>
-            <div id="currentToolBadge" class="text-[10px] font-black text-blue-400 bg-blue-400/10 px-4 py-1.5 rounded-full border border-blue-400/20 tracking-[0.1em] uppercase">Chat Mode</div>
+            <div class="text-[10px] font-black text-blue-400 bg-blue-400/10 px-4 py-1.5 rounded-full border border-blue-400/20 uppercase tracking-tighter">No Login Required</div>
         </header>
 
         <div id="chatContainer" class="flex-1 flex flex-col overflow-hidden relative">
-            <div id="chatBox" class="flex-1 overflow-y-auto p-8 space-y-6 max-w-6xl mx-auto w-full pb-40">
-                <div id="welcomeScreen" class="py-6 text-center">
-                    <h2 class="text-5xl font-black text-white mb-4 tracking-tighter">ZEYAN <span class="text-blue-500">STUDIO</span></h2>
-                    <p class="text-gray-500 font-medium mb-10">Universal AI Studio for text, image and voice generation.</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                        <div onclick="switchMode('chat')" class="dash-card p-8 rounded-3xl">
-                            <i class="fas fa-comment-dots text-3xl text-blue-500 mb-4"></i>
-                            <h3 class="font-bold text-gray-100">Smart Chat</h3>
+            <div id="chatBox" class="flex-1 overflow-y-auto p-8 space-y-6 max-w-5xl mx-auto w-full pb-40">
+                <div id="welcomeScreen" class="py-10 text-center">
+                    <h2 class="text-5xl font-black text-white mb-4 tracking-tighter italic">ZEYAN <span class="text-blue-500 uppercase font-bold">Studio</span></h2>
+                    <p class="text-gray-500 mb-12">Universal AI Studio for text and image generation.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+                        <div onclick="switchMode('chat')" class="dash-card">
+                            <i class="fas fa-robot text-3xl text-blue-500 mb-4"></i>
+                            <h3 class="font-bold">Free Chat</h3>
                         </div>
-                        <div onclick="switchMode('image')" class="dash-card p-8 rounded-3xl">
-                            <i class="fas fa-image text-3xl text-orange-500 mb-4"></i>
-                            <h3 class="font-bold text-gray-100">Image Studio</h3>
+                        <div onclick="switchMode('image')" class="dash-card">
+                            <i class="fas fa-wand-magic-sparkles text-3xl text-orange-500 mb-4"></i>
+                            <h3 class="font-bold">Free Image</h3>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-[#0b0d14] to-transparent">
-                <div class="max-w-4xl mx-auto flex gap-3 bg-[#161a29] border border-gray-800 rounded-3xl p-3 shadow-2xl">
-                    <textarea id="userInput" rows="1" placeholder="Type your message..." class="flex-1 bg-transparent py-3 px-4 outline-none text-sm resize-none"></textarea>
-                    <button id="sendBtn" class="bg-blue-600 w-14 h-14 rounded-2xl flex items-center justify-center hover:bg-blue-500 transition shadow-lg">
-                        <i class="fas fa-paper-plane text-white text-lg"></i>
+                <div class="max-w-4xl mx-auto flex gap-3 bg-[#161a29] border border-gray-800 rounded-2xl p-2 shadow-2xl">
+                    <textarea id="userInput" rows="1" placeholder="Ask anything or describe image..." class="flex-1 bg-transparent py-3 px-4 outline-none text-sm resize-none"></textarea>
+                    <button id="sendBtn" class="bg-blue-600 w-12 h-12 rounded-xl flex items-center justify-center hover:bg-blue-500 transition shadow-lg shadow-blue-600/30">
+                        <i class="fas fa-paper-plane text-white"></i>
                     </button>
                 </div>
             </div>
         </div>
-
-        <div id="voiceInterface" class="hidden flex-1 flex-col items-center justify-center">
-            <div id="voiceOrb" class="w-40 h-40 rounded-full border-4 border-blue-500/20 flex items-center justify-center">
-                <i class="fas fa-microphone text-4xl text-blue-500"></i>
-            </div>
-            <p id="voiceStatus" class="mt-8 text-gray-500 uppercase font-black text-xs tracking-widest">Tap to speak</p>
-            <button onclick="startVoice()" class="mt-8 w-20 h-20 bg-gray-900 border-4 border-gray-800 rounded-full flex items-center justify-center">
-                <i class="fas fa-play text-blue-500 text-2xl"></i>
-            </button>
-        </div>
     </main>
 
     <script>
-        // --- Smart Login ---
-        function smartLogin() {
-            const name = prompt("Enter your name:");
-            if(name && name.trim()) { localStorage.setItem('zeyan_user', name.trim()); updateUI(); }
-        }
-        function smartLogout() { localStorage.removeItem('zeyan_user'); location.reload(); }
-        function updateUI() {
-            const user = localStorage.getItem('zeyan_user');
-            if(user) {
-                document.getElementById('loginBtn').classList.add('hidden');
-                document.getElementById('userProfile').classList.remove('hidden');
-                document.getElementById('displayUserName').innerText = user;
-                document.getElementById('userInitial').innerText = user.charAt(0).toUpperCase();
-            }
-        }
-        updateUI();
-
-        // --- Navigation ---
         let mode = 'chat';
         function switchMode(m) {
             mode = m;
-            document.getElementById('chatContainer').classList.toggle('hidden', m === 'voice');
-            document.getElementById('voiceInterface').classList.toggle('hidden', m !== 'voice');
-            document.getElementById('currentToolBadge').innerText = m.toUpperCase() + " MODE";
-            ['chat', 'image', 'voice'].forEach(t => {
-                const btn = document.getElementById('btn-' + t);
-                if(btn) btn.classList.toggle('active-tool', t === m);
-            });
+            document.getElementById('welcomeScreen')?.remove();
+            const b = document.querySelectorAll('aside button');
+            b.forEach(btn => btn.classList.remove('active-tool'));
+            document.getElementById('btn-' + m).classList.add('active-tool');
         }
 
-        // --- Core Fetch Logic ---
         async function handleSend() {
             const input = document.getElementById('userInput');
             const prompt = input.value.trim();
-            if(!prompt || !localStorage.getItem('zeyan_user')) return;
+            if(!prompt) return;
             
             if(document.getElementById('welcomeScreen')) document.getElementById('welcomeScreen').remove();
             input.value = '';
 
             const chatBox = document.getElementById('chatBox');
-            chatBox.innerHTML += `<div class="flex justify-end mb-6"><div class="bg-blue-600 text-white px-6 py-3 rounded-3xl rounded-br-none text-sm shadow-xl max-w-[85%]">${prompt}</div></div>`;
+            chatBox.innerHTML += `<div class="flex justify-end mb-6"><div class="bg-blue-600 px-6 py-3 rounded-2xl rounded-br-none text-sm shadow-xl">${prompt}</div></div>`;
 
             const loadDiv = document.createElement('div');
             loadDiv.className = "flex justify-start mb-6 italic text-gray-500 text-xs";
@@ -157,10 +107,8 @@
 
             try {
                 if(mode === 'image') {
-                    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=720&height=1280&nologo=true&seed=${Math.floor(Math.random()*10000)}`;
-                    const img = new Image();
-                    img.onload = () => { loadDiv.innerHTML = `<div class="p-2 bg-[#121520] rounded-3xl border border-gray-800 shadow-2xl inline-block"><img src="${url}" class="rounded-2xl max-w-sm w-full"></div>`; chatBox.scrollTop = chatBox.scrollHeight; };
-                    img.src = url;
+                    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=720&height=1280&nologo=true&seed=${Math.floor(Math.random()*9999)}`;
+                    loadDiv.innerHTML = `<div class="p-2 bg-[#121520] rounded-2xl border border-gray-800 shadow-2xl inline-block"><img src="${url}" class="rounded-xl max-w-sm w-full"></div>`;
                 } else {
                     const res = await fetch("/api/chat", {
                         method: "POST",
@@ -169,30 +117,14 @@
                     });
                     const data = await res.json();
                     if(data.error) throw new Error(data.error.message);
-                    loadDiv.innerHTML = `<div class="bg-[#121520] border border-gray-800 text-gray-200 px-6 py-4 rounded-3xl rounded-bl-none text-sm shadow-lg leading-relaxed">${data.choices[0].message.content.replace(/\n/g, '<br>')}</div>`;
+                    loadDiv.innerHTML = `<div class="bg-[#121520] border border-gray-800 text-gray-200 px-6 py-4 rounded-2xl rounded-bl-none text-sm shadow-lg leading-relaxed">${data.choices[0].message.content.replace(/\n/g, '<br>')}</div>`;
                 }
-            } catch (e) { loadDiv.innerHTML = `<div class="bg-red-500/10 text-red-500 p-3 rounded-xl border border-red-500/20 text-xs font-bold">Error: ${e.message}</div>`; }
+            } catch (e) { loadDiv.innerHTML = `<div class="text-red-500 font-bold p-2 bg-red-500/10 rounded-lg">Error: ${e.message}</div>`; }
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
         document.getElementById('sendBtn').onclick = handleSend;
         document.getElementById('userInput').onkeydown = (e) => { if(e.key==='Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
-
-        function startVoice() {
-            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            rec.onstart = () => { document.getElementById('voiceOrb').classList.add('listening'); document.getElementById('voiceStatus').innerText = "Listening..."; };
-            rec.onresult = async (e) => {
-                const text = e.results[0][0].transcript;
-                try {
-                    const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: document.getElementById('modelSelect').value, prompt: text }) });
-                    const data = await res.json();
-                    const utter = new SpeechSynthesisUtterance(data.choices[0].message.content);
-                    utter.onend = () => { document.getElementById('voiceOrb').classList.remove('listening'); document.getElementById('voiceStatus').innerText = "Tap to speak"; };
-                    window.speechSynthesis.speak(utter);
-                } catch(e) { console.error("Voice Error"); }
-            };
-            rec.start();
-        }
     </script>
 </body>
 </html>
