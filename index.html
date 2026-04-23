@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zeyan AI | Studio</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -14,14 +13,7 @@
         .active-tool { background: rgba(37, 99, 235, 0.2); border-color: #3b82f6; color: #fff;}
         .ai-msg { background: #161b29; border: 1px solid #1f2536; border-radius: 18px 18px 18px 0; }
         .user-msg { background: #2563eb; border-radius: 18px 18px 0 18px; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #1f2536; border-radius: 10px; }
-        
-        /* Mobile Sidebar Toggle */
-        @media (max-width: 768px) {
-            .sidebar-closed { transform: translateX(-100%); }
-            .sidebar-open { transform: translateX(0); }
-        }
+        @media (max-width: 768px) { .sidebar-closed { transform: translateX(-100%); } .sidebar-open { transform: translateX(0); } }
     </style>
 </head>
 <body class="flex h-screen relative">
@@ -30,12 +22,12 @@
         <div class="p-5 border-b border-gray-800 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center"><i class="fas fa-bolt text-sm"></i></div>
-                <h1 class="text-lg font-black italic">ZEYAN<span class="text-blue-500 text-sm">AI</span></h1>
+                <h1 class="text-lg font-black italic">ZEYAN<span class="text-blue-500">AI</span></h1>
             </div>
             <button onclick="toggleSidebar()" class="md:hidden text-gray-400"><i class="fas fa-times"></i></button>
         </div>
         <div class="p-3 space-y-2">
-            <button onclick="switchMode('chat')" id="btn-chat" class="w-full flex items-center p-3 rounded-xl active-tool text-sm transition"><i class="fas fa-comment-dots w-6 text-blue-400"></i> Chat & Voice</button>
+            <button onclick="switchMode('chat')" id="btn-chat" class="w-full flex items-center p-3 rounded-xl active-tool text-sm transition"><i class="fas fa-comment-dots w-6 text-blue-400"></i> AI Chat</button>
             <button onclick="switchMode('image')" id="btn-image" class="w-full flex items-center p-3 rounded-xl text-sm text-gray-400 hover:bg-gray-800 transition"><i class="fas fa-wand-magic-sparkles w-6 text-orange-400"></i> Image Gen</button>
         </div>
     </aside>
@@ -45,24 +37,25 @@
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="md:hidden w-8 h-8 flex items-center justify-center bg-gray-800 rounded-lg"><i class="fas fa-bars text-xs"></i></button>
                 <select id="modelSelect" class="bg-[#121520] border border-gray-700 text-[10px] font-bold rounded-lg px-2 py-1.5 outline-none text-gray-300 focus:border-blue-500">
+                    <option value="google/gemma-2-9b-it:free">Gemma 2 (Fast & Free)</option>
                     <option value="mistralai/mistral-7b-instruct:free">Mistral 7B (Free)</option>
                     <option value="google/gemini-2.0-flash-001">Gemini 2.0 Pro</option>
                 </select>
             </div>
-            <span class="text-[9px] font-black text-blue-400 bg-blue-400/10 px-2 py-1 rounded border border-blue-400/20 uppercase tracking-tighter">V2.2 Stable</span>
+            <span class="text-[9px] font-black text-blue-400 bg-blue-400/10 px-2 py-1 rounded border border-blue-400/20 uppercase tracking-tighter">Connection: Active</span>
         </header>
 
         <div id="chatContainer" class="flex-1 flex flex-col overflow-hidden relative">
             <div id="chatBox" class="flex-1 overflow-y-auto p-4 space-y-5 w-full max-w-3xl mx-auto pb-32">
                 <div id="welcomeScreen" class="py-10 text-center">
-                    <h2 class="text-3xl font-black text-white mb-2 italic tracking-tighter">ZEYAN <span class="text-blue-500">STUDIO</span></h2>
-                    <p class="text-xs text-gray-500">AI Chat, Voice & Images</p>
+                    <h2 class="text-3xl font-black text-white mb-2 italic tracking-tighter">ZEYAN <span class="text-blue-500 uppercase">Studio</span></h2>
+                    <p class="text-xs text-gray-500">AI Studio - Chat & Images</p>
                 </div>
             </div>
 
             <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-[#0b0d14] via-[#0b0d14] to-transparent">
                 <div class="max-w-2xl mx-auto flex gap-2 bg-[#161a29] border border-gray-800 rounded-full p-1.5 shadow-2xl focus-within:border-blue-500/50 transition">
-                    <textarea id="userInput" rows="1" placeholder="Ask anything..." class="flex-1 bg-transparent py-2.5 px-4 outline-none text-sm resize-none text-gray-100 placeholder:text-gray-600"></textarea>
+                    <textarea id="userInput" rows="1" placeholder="Type here..." class="flex-1 bg-transparent py-2.5 px-4 outline-none text-sm resize-none text-gray-100 placeholder:text-gray-600"></textarea>
                     <button id="sendBtn" class="bg-blue-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-500 transition shadow-lg"><i class="fas fa-paper-plane text-xs text-white"></i></button>
                 </div>
             </div>
@@ -70,7 +63,6 @@
     </main>
 
     <script>
-        // Sidebar Logic
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             sb.classList.toggle('sidebar-closed');
@@ -98,7 +90,7 @@
 
             const loadDiv = document.createElement('div');
             loadDiv.className = "flex justify-start italic text-gray-600 text-[10px]";
-            loadDiv.innerText = "Zeyan AI is thinking...";
+            loadDiv.innerText = "Zeyan AI is typing...";
             chatBox.appendChild(loadDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
 
@@ -113,16 +105,15 @@
                         body: JSON.stringify({ model: document.getElementById('modelSelect').value, prompt: prompt })
                     });
                     const data = await res.json();
-                    if(data.error) throw new Error(data.error.message);
+                    if(data.error) throw new Error(data.error.message || "OpenRouter Connection Failed");
                     
                     const aiText = data.choices[0].message.content;
                     loadDiv.innerHTML = `<div class="ai-msg text-gray-200 px-4 py-2.5 text-sm max-w-[90%] shadow-sm leading-relaxed">${aiText.replace(/\n/g, '<br>')}</div>`;
                     
-                    // Auto Voice
                     const utter = new SpeechSynthesisUtterance(aiText);
                     window.speechSynthesis.speak(utter);
                 }
-            } catch (e) { loadDiv.innerHTML = `<div class="text-red-500 text-[10px] font-bold bg-red-500/10 p-2 rounded-lg border border-red-500/20">Connection Issue. Check API or Credits.</div>`; }
+            } catch (e) { loadDiv.innerHTML = `<div class="text-red-500 text-[10px] font-bold bg-red-500/10 p-2 rounded-lg border border-red-500/20">Error: ${e.message}</div>`; }
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
