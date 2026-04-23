@@ -10,7 +10,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background-color: #0b0d14; color: #e5e7eb; overflow: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #0b0d14; color: #e5e7eb; overflow-x: hidden; }
         .glass-panel { background: rgba(16, 19, 28, 0.95); border-right: 1px solid #1f2536; }
         .active-tool { background: rgba(37, 99, 235, 0.1); border-color: #3b82f6; border-left: 4px solid #3b82f6; color: #fff;}
         
@@ -74,165 +74,10 @@
         <header class="h-16 flex items-center justify-between px-8 border-b border-gray-800/50 bg-[#0b0d14]/80 backdrop-blur-xl z-10">
             <div class="flex items-center gap-4">
                 <select id="modelSelect" class="bg-[#121520] border border-gray-700 text-xs font-bold rounded-xl px-4 py-2 outline-none text-gray-200 focus:border-blue-500 transition cursor-pointer">
-                    <optgroup label="Free AI Models">
-                        <option value="mistralai/mistral-7b-instruct:free">Mistral 7B (Fast) - Free</option>
+                    <optgroup label="Free AI Models (Active)">
+                        <option value="mistralai/mistral-7b-instruct:free">Mistral 7B (Best) - Free</option>
                         <option value="huggingfaceh4/zephyr-7b-beta:free">Zephyr 7B - Free</option>
                         <option value="openchat/openchat-7b:free">OpenChat 7B - Free</option>
                     </optgroup>
                     <optgroup label="Pro AI Models">
-                        <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash - Pro</option>
-                        <option value="x-ai/grok-2">Grok 2 (X) - Pro</option>
-                    </optgroup>
-                </select>
-            </div>
-            <div id="currentToolBadge" class="text-[10px] font-black text-blue-400 bg-blue-400/10 px-4 py-1.5 rounded-full border border-blue-400/20 tracking-[0.1em] uppercase">Chat Mode</div>
-        </header>
-
-        <div id="chatContainer" class="flex-1 flex flex-col overflow-hidden relative">
-            <div id="chatBox" class="flex-1 overflow-y-auto p-8 space-y-8 max-w-6xl mx-auto w-full pb-40">
-                
-                <div id="welcomeScreen" class="py-6">
-                    <div class="text-center mb-12">
-                        <h2 class="text-5xl font-black text-white mb-4 tracking-tighter">Zeyan <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">AI Studio</span></h2>
-                        <p class="text-gray-500 font-medium text-lg">Universal AI Studio for text, image and voice generation.</p>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div onclick="switchMode('chat')" class="dash-card p-8 rounded-3xl">
-                            <i class="fas fa-comment-dots text-3xl text-blue-500 mb-4"></i>
-                            <h3 class="font-bold text-gray-100 mb-2">Smart Chat <span class="free-tag ml-2">Free</span></h3>
-                            <p class="text-sm text-gray-500 leading-relaxed font-medium">Fast answers with Mistral & Zephyr models.</p>
-                        </div>
-                        <div onclick="switchMode('image')" class="dash-card p-8 rounded-3xl">
-                            <i class="fas fa-wand-magic-sparkles text-3xl text-orange-500 mb-4"></i>
-                            <h3 class="font-bold text-gray-100 mb-2">Image Studio <span class="free-tag ml-2">Free</span></h3>
-                            <p class="text-sm text-gray-500 leading-relaxed font-medium">Generate cinematic 9:16 visuals instantly.</p>
-                        </div>
-                        <div onclick="switchMode('voice')" class="dash-card p-8 rounded-3xl">
-                            <i class="fas fa-headset text-3xl text-pink-500 mb-4"></i>
-                            <h3 class="font-bold text-gray-100 mb-2">Voice Chat <span class="free-tag ml-2">Live</span></h3>
-                            <p class="text-sm text-gray-500 leading-relaxed font-medium">Real-time voice conversation with AI.</p>
-                        </div>
-                        <div onclick="alert('Video Studio launching soon!')" class="dash-card p-8 rounded-3xl opacity-60">
-                            <i class="fas fa-video text-3xl text-red-500 mb-4"></i>
-                            <h3 class="font-bold text-gray-100 mb-2">Video Gen <span class="pro-tag ml-2">Soon</span></h3>
-                            <p class="text-sm text-gray-500 leading-relaxed font-medium">Turn text to cinematic video clips.</p>
-                        </div>
-                        <div onclick="alert('Music Studio launching soon!')" class="dash-card p-8 rounded-3xl opacity-60">
-                            <i class="fas fa-music text-3xl text-green-500 mb-4"></i>
-                            <h3 class="font-bold text-gray-100 mb-2">Music Gen <span class="pro-tag ml-2">Soon</span></h3>
-                            <p class="text-sm text-gray-500 leading-relaxed font-medium">Create beats and tracks from prompts.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-[#0b0d14] to-transparent">
-                <div class="max-w-4xl mx-auto flex gap-3 bg-[#161a29] border border-gray-800 rounded-3xl p-3 shadow-2xl">
-                    <textarea id="userInput" rows="1" placeholder="Type your prompt here..." class="flex-1 bg-transparent py-3 px-4 outline-none text-sm resize-none"></textarea>
-                    <button id="sendBtn" class="bg-blue-600 w-14 h-14 rounded-2xl hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center">
-                        <i class="fas fa-paper-plane text-white text-lg"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div id="voiceInterface" class="hidden flex-1 flex-col items-center justify-center">
-            <div id="voiceOrb" class="w-48 h-48 flex items-center justify-center relative">
-                <i class="fas fa-microphone text-5xl text-blue-500 z-10"></i>
-            </div>
-            <p id="voiceStatus" class="mt-12 text-gray-400 font-black tracking-widest text-sm uppercase">Tap to speak</p>
-            <button onclick="startVoice()" class="mt-12 w-24 h-24 bg-gray-900 border-4 border-gray-800 rounded-full flex items-center justify-center">
-                <i class="fas fa-play text-blue-500 text-3xl"></i>
-            </button>
-        </div>
-    </main>
-
-    <script>
-        // --- Smart Login ---
-        function smartLogin() {
-            const name = prompt("Enter your name:");
-            if(name) {
-                localStorage.setItem('zeyan_user', name);
-                updateUI();
-            }
-        }
-        function smartLogout() {
-            localStorage.removeItem('zeyan_user');
-            updateUI();
-        }
-        function updateUI() {
-            const user = localStorage.getItem('zeyan_user');
-            if(user) {
-                document.getElementById('loginBtn').classList.add('hidden');
-                document.getElementById('userProfile').classList.remove('hidden');
-                document.getElementById('displayUserName').innerText = user;
-                document.getElementById('userInitial').innerText = user.charAt(0).toUpperCase();
-            } else {
-                document.getElementById('loginBtn').classList.remove('hidden');
-                document.getElementById('userProfile').classList.add('hidden');
-            }
-        }
-        updateUI();
-
-        // --- Navigation ---
-        let mode = 'chat';
-        function switchMode(m) {
-            mode = m;
-            document.getElementById('chatContainer').classList.toggle('hidden', m === 'voice');
-            document.getElementById('voiceInterface').classList.toggle('hidden', m !== 'voice');
-            document.getElementById('currentToolBadge').innerText = m.toUpperCase() + " MODE";
-        }
-
-        // --- Logic ---
-        async function handleSend() {
-            const input = document.getElementById('userInput');
-            const prompt = input.value.trim();
-            if(!prompt || !localStorage.getItem('zeyan_user')) return;
-            
-            if(document.getElementById('welcomeScreen')) document.getElementById('welcomeScreen').remove();
-            input.value = '';
-
-            const chatBox = document.getElementById('chatBox');
-            chatBox.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 text-white px-6 py-3 rounded-3xl rounded-br-none text-sm">${prompt}</div></div>`;
-
-            const loadDiv = document.createElement('div');
-            loadDiv.innerHTML = `<div class="text-xs text-gray-500 uppercase tracking-widest">Processing...</div>`;
-            chatBox.appendChild(loadDiv);
-
-            try {
-                if(mode === 'image') {
-                    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=720&height=1280&nologo=true`;
-                    loadDiv.innerHTML = `<div class="p-2 bg-[#121520] rounded-3xl border border-gray-800 inline-block"><img src="${url}" class="rounded-2xl max-w-sm"></div>`;
-                } else {
-                    const res = await fetch("/api/chat", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ model: document.getElementById('modelSelect').value, prompt: prompt })
-                    });
-                    const data = await res.json();
-                    loadDiv.innerHTML = `<div class="bg-[#121520] border border-gray-800 text-gray-200 px-6 py-4 rounded-3xl rounded-bl-none text-sm">${data.choices[0].message.content.replace(/\n/g, '<br>')}</div>`;
-                }
-            } catch (e) { loadDiv.innerText = "Error: " + e.message; }
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        document.getElementById('sendBtn').onclick = handleSend;
-        document.getElementById('userInput').onkeydown = (e) => { if(e.key==='Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
-
-        function startVoice() {
-            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            rec.onstart = () => { document.getElementById('voiceOrb').classList.add('listening'); };
-            rec.onresult = async (e) => {
-                const text = e.results[0][0].transcript;
-                const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: document.getElementById('modelSelect').value, prompt: text }) });
-                const data = await res.json();
-                const utter = new SpeechSynthesisUtterance(data.choices[0].message.content);
-                utter.onend = () => { document.getElementById('voiceOrb').classList.remove('listening'); };
-                window.speechSynthesis.speak(utter);
-            };
-            rec.start();
-        }
-    </script>
-</body>
-</html>
+                        <option value="google/gemini-2.0-flash-001">Gemini 2.
